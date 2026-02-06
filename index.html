@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PET 智慧排程助手</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-50: #fdf2f8;
+            --pink-100: #fce7f3;
+            --pink-200: #fbcfe8;
+            --pink-300: #f9a8d4;
+            --pink-400: #f472b6;
+            --pink-500: #ec4899;
+            --rose-50: #fff1f2;
+            --rose-100: #ffe4e6;
+            --lavender-50: #faf5ff;
+            --lavender-100: #f3e8ff;
+            --lavender-200: #e9d5ff;
+            --mint-50: #f0fdf4;
+            --mint-100: #dcfce7;
+            --mint-200: #bbf7d0;
+            --peach-50: #fff7ed;
+            --peach-100: #ffedd5;
+            --cream: #fffbf7;
+            --warm-gray-50: #fafaf9;
+            --warm-gray-100: #f5f5f4;
+            --warm-gray-200: #e7e5e4;
+            --warm-gray-600: #78716c;
+            --warm-gray-700: #57534e;
+            --warm-gray-800: #44403c;
+        }
+
+        * {
+            font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, var(--pink-50) 0%, var(--lavender-50) 50%, var(--mint-50) 100%);
+            min-height: 100vh;
+        }
+
+        /* 呼吸燈動畫 */
+        @keyframes pulse-soft {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.3);
+            }
+
+            50% {
+                opacity: 0.85;
+                box-shadow: 0 0 12px 4px rgba(251, 146, 60, 0.2);
+            }
+        }
+
+        .pulse-delayed {
+            animation: pulse-soft 2.5s ease-in-out infinite;
+        }
+
+        /* 列印優化 - 只印 打藥時刻表 和 執行清單 */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .printable-section,
+            .printable-section * {
+                visibility: visible !important;
+            }
+
+            .printable-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin-bottom: 24px;
+                page-break-inside: avoid;
+            }
+
+            .printable-section:nth-of-type(2) {
+                position: relative;
+                margin-top: 24px;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block !important;
+            }
+
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb !important;
+            }
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .card {
+                border-radius: 12px !important;
+            }
+
+            table {
+                font-size: 12px !important;
+            }
+
+            th,
+            td {
+                padding: 10px 8px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            table {
+                font-size: 11px !important;
+            }
+
+            th,
+            td {
+                padding: 8px 6px !important;
+            }
+        }
+
+        /* 按鈕 hover 效果 */
+        .btn-soft {
+            transition: all 0.2s ease;
+        }
+
+        .btn-soft:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-soft:active {
+            transform: translateY(0);
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        /* 表格行 hover */
+        .table-row:hover {
+            background: var(--pink-50);
+        }
+
+        /* 輸入框 */
+        .input-soft {
+            border: 2px solid var(--warm-gray-200);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-soft:focus {
+            border-color: var(--pink-300);
+            box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.2);
+        }
+
+        /* 甘特圖條 */
+        .gantt-bar {
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .gantt-bar:hover {
+            filter: brightness(1.05);
+            transform: scaleY(1.15);
+        }
+
+        /* 切斷點樣式 */
+        .cutoff-row {
+            background: linear-gradient(90deg, var(--peach-50) 0%, var(--peach-100) 100%);
+            border-left: 3px solid #fb923c;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // ============ 預設參數 ============
+        const DEFAULT_CONFIG = {
+            startTime: "08:30",
+            earlyScanDuration: 35,
+            delayedScanDuration: 20,
+            uptakeTime: 60,
+            minWaitLimit: 100,   // 打藥到 Delayed 開始 的最小時間
+            maxWaitLimit: 150,   // 打藥到 Delayed 開始 的最大時間
+            lunchBreakEnabled: false,
+            lunchBreakStart: "12:00",
+            lunchBreakEnd: "13:00",
+        };
+
+        // ============ 工具函數 ============
+        const timeToMinutes = (timeStr) => {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        const minutesToTime = (minutes) => {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        };
+
+        // ============ 核心排程演算法（真正自動最佳化 + 午休支援） ============
+        // 策略：自動分批 + 動態調整打藥時間 + 午休避開，確保所有人都不超時
+        const calculateSchedule = (patientCount, config) => {
+            const {
+                startTime,
+                earlyScanDuration,
+                delayedScanDuration,
+                uptakeTime,
+                minWaitLimit,
+                maxWaitLimit,
+                lunchBreakEnabled,
+                lunchBreakStart,
+                lunchBreakEnd,
+            } = config;
+
+            const startMinutes = timeToMinutes(startTime);
+            const n = patientCount;
+
+            // 午休時間（分鐘）
+            const lunchStart = lunchBreakEnabled ? timeToMinutes(lunchBreakStart) : null;
+            const lunchEnd = lunchBreakEnabled ? timeToMinutes(lunchBreakEnd) : null;
+
+            // 檢查時間是否與午休衝突，如果衝突則跳過午休
+            const adjustForLunch = (proposedStart, duration) => {
+                if (!lunchBreakEnabled) return proposedStart;
+                const proposedEnd = proposedStart + duration;
+                // 如果掃描會跨越午休開始時間，則延後到午休結束
+                if (proposedStart < lunchEnd && proposedEnd > lunchStart) {
+                    return lunchEnd;
+                }
+                return proposedStart;
+            };
+
+            if (n === 0) {
+                return { mode: 'EMPTY', schedule: [], batches: [] };
+            }
+
+            // ===== 如果 delayedScanDuration = 0，表示不需要 Delayed Scan =====
+            const needDelayed = delayedScanDuration > 0;
+
+            if (!needDelayed) {
+                // 僅 Early 模式：連續排程，不需分批
+                const schedule = [];
+                let machineTime = startMinutes + uptakeTime;
+
+                for (let i = 0; i < n; i++) {
+                    let earlyStart = machineTime;
+                    earlyStart = adjustForLunch(earlyStart, earlyScanDuration);
+
+                    const injTime = earlyStart - uptakeTime;
+                    const earlyEnd = earlyStart + earlyScanDuration;
+
+                    schedule.push({
+                        id: i + 1,
+                        batch: 1,
+                        injTime,
+                        earlyStart,
+                        earlyEnd,
+                        delayedStart: null,
+                        delayedEnd: null,
+                    });
+
+                    machineTime = earlyEnd;
+                }
+
+                const firstInj = schedule[0].injTime;
+                const lastEnd = schedule[n - 1].earlyEnd;
+
+                return {
+                    mode: 'EARLY_ONLY',
+                    schedule,
+                    batches: [{ batchNumber: 1, patients: schedule.map(p => p.id), firstInj, lastDelayedEnd: lastEnd }],
+                    maxBatchSize: n,
+                    maxPatientWaitTime: null,
+                    minPatientWaitTime: null,
+                    totalDuration: lastEnd - firstInj,
+                    summary: `僅 Early Scan 模式：${n} 位病人連續處理`,
+                };
+            }
+
+            // ===== 關鍵計算：每批最多可連續做幾個 Early =====
+            const maxBatchSize = Math.floor((maxWaitLimit - uptakeTime) / earlyScanDuration);
+
+            if (maxBatchSize < 1) {
+                return {
+                    mode: 'ERROR',
+                    schedule: [],
+                    batches: [],
+                    error: `參數不合理：uptakeTime (${uptakeTime}) + 至少一次掃描 已超過 maxWaitLimit (${maxWaitLimit})`
+                };
+            }
+
+            // ===== 分批處理（支援午休） =====
+            const schedule = [];
+            const batches = [];
+            let machineTime = startMinutes + uptakeTime;
+            let patientId = 1;
+            let batchNumber = 1;
+
+            while (patientId <= n) {
+                const batchSize = Math.min(maxBatchSize, n - patientId + 1);
+                const batchPatients = [];
+
+                // 這一批的打藥和 Early
+                for (let i = 0; i < batchSize; i++) {
+                    // 計算 Early 開始時間，考慮午休
+                    let earlyStart = machineTime + i * earlyScanDuration;
+                    earlyStart = adjustForLunch(earlyStart, earlyScanDuration);
+
+                    // 如果因午休調整了 Early，後續的也需要重新計算
+                    if (i > 0) {
+                        const prevEnd = batchPatients[i - 1].earlyEnd;
+                        earlyStart = Math.max(earlyStart, prevEnd);
+                        earlyStart = adjustForLunch(earlyStart, earlyScanDuration);
+                    }
+
+                    const injTime = earlyStart - uptakeTime;
+                    const earlyEnd = earlyStart + earlyScanDuration;
+
+                    const patient = {
+                        id: patientId + i,
+                        batch: batchNumber,
+                        injTime,
+                        earlyStart,
+                        earlyEnd,
+                        delayedStart: null,
+                        delayedEnd: null,
+                    };
+                    batchPatients.push(patient);
+                }
+
+                // 更新機器時間
+                machineTime = batchPatients[batchSize - 1].earlyEnd;
+
+                // 這一批的 Delayed（緊接著 Early 完成後，但要避開午休，且要滿足 minWaitLimit）
+                for (let i = 0; i < batchSize; i++) {
+                    const patient = batchPatients[i];
+                    // 確保等待時間 >= minWaitLimit
+                    const minDelayedStart = patient.injTime + minWaitLimit;
+                    let delayedStart = Math.max(machineTime, minDelayedStart);
+                    delayedStart = adjustForLunch(delayedStart, delayedScanDuration);
+
+                    patient.delayedStart = delayedStart;
+                    patient.delayedEnd = delayedStart + delayedScanDuration;
+                    machineTime = patient.delayedEnd;
+                }
+
+                batches.push({
+                    batchNumber,
+                    patients: batchPatients.map(p => p.id),
+                    firstInj: batchPatients[0].injTime,
+                    lastDelayedEnd: machineTime,
+                });
+
+                schedule.push(...batchPatients);
+                patientId += batchSize;
+                batchNumber++;
+            }
+
+            // ===== 計算統計資訊 =====
+            const waitTimes = schedule.map(p => p.delayedStart - p.injTime);
+            const maxWait = Math.max(...waitTimes);
+            const minWait = Math.min(...waitTimes);
+            const firstInj = Math.min(...schedule.map(p => p.injTime));
+            const lastEnd = Math.max(...schedule.map(p => p.delayedEnd));
+            const totalDuration = lastEnd - firstInj;
+
+            return {
+                mode: batches.length === 1 ? 'BATCH' : 'AUTO_INTERLEAVED',
+                schedule,
+                batches,
+                maxBatchSize,
+                maxPatientWaitTime: maxWait,
+                minPatientWaitTime: minWait,
+                totalDuration,
+                summary: batches.length === 1
+                    ? `批次模式：${n} 位病人可一次完成`
+                    : `自動分批：分 ${batches.length} 批處理，每批最多 ${maxBatchSize} 人`,
+            };
+        };
+
+        // ============ 生成工作清單 ============
+        const generateWorklist = (schedule) => {
+            const tasks = [];
+
+            schedule.forEach((patient) => {
+                tasks.push({
+                    time: patient.earlyStart,
+                    endTime: patient.earlyEnd,
+                    type: 'EARLY',
+                    patientId: patient.id,
+                    duration: patient.earlyEnd - patient.earlyStart,
+                });
+
+                if (patient.delayedStart !== null) {
+                    tasks.push({
+                        time: patient.delayedStart,
+                        endTime: patient.delayedEnd,
+                        type: 'DELAYED',
+                        patientId: patient.id,
+                        duration: patient.delayedEnd - patient.delayedStart,
+                    });
+                }
+            });
+
+            tasks.sort((a, b) => a.time - b.time);
+            return tasks;
+        };
+
+        // ============ 醫師規劃面板 ============
+        const PlannerTab = ({ schedule, result, config }) => {
+            const ganttData = useMemo(() => {
+                if (!schedule.length) return { tasks: [], minTime: 0, maxTime: 0 };
+
+                const tasks = [];
+                schedule.forEach((p) => {
+                    tasks.push({ patientId: p.id, type: 'EARLY', start: p.earlyStart, end: p.earlyEnd });
+                    if (p.delayedStart !== null) {
+                        tasks.push({ patientId: p.id, type: 'DELAYED', start: p.delayedStart, end: p.delayedEnd });
+                    }
+                });
+
+                const allTimes = tasks.flatMap(t => [t.start, t.end]);
+                return { tasks, minTime: Math.min(...allTimes), maxTime: Math.max(...allTimes) };
+            }, [schedule]);
+
+            const getBarColor = (type) => {
+                return type === 'EARLY'
+                    ? 'background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)'
+                    : 'background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%)';
+            };
+
+            const getBarPosition = (start, end, minTime, maxTime) => {
+                const totalDuration = maxTime - minTime || 1;
+                const left = ((start - minTime) / totalDuration) * 100;
+                const width = ((end - start) / totalDuration) * 100;
+                return { left: `${left}%`, width: `${Math.max(width, 1)}%` };
+            };
+
+            const timeMarkers = useMemo(() => {
+                if (!schedule.length) return [];
+                const { minTime, maxTime } = ganttData;
+                const markers = [];
+                const start = Math.floor(minTime / 30) * 30;
+                for (let t = start; t <= maxTime; t += 30) {
+                    const pos = ((t - minTime) / (maxTime - minTime || 1)) * 100;
+                    markers.push({ time: t, pos });
+                }
+                return markers;
+            }, [ganttData, schedule.length]);
+
+            return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {/* 打藥時刻表 */}
+                    <div className="card printable-section" style={{ overflow: 'hidden' }}>
+                        <div style={{
+                            padding: '20px 24px',
+                            borderBottom: '1px solid #f3e8ff',
+                            background: 'linear-gradient(135deg, var(--lavender-50) 0%, var(--pink-50) 100%)'
+                        }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ fontSize: '20px' }}>💉</span>
+                                建議打藥時刻表
+                            </h3>
+                            <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
+                                將此表交給護理師，照表打藥即可
+                            </p>
+                        </div>
+
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                                <thead>
+                                    <tr style={{ background: 'var(--warm-gray-50)', color: 'var(--warm-gray-600)' }}>
+                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>序號</th>
+                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
+                                            <span style={{ color: '#e11d48' }}>💉</span> 打藥時間
+                                        </th>
+                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
+                                            <span style={{ color: '#3b82f6' }}>⚡</span> Early Scan
+                                        </th>
+                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
+                                            <span style={{ color: '#f97316' }}>🕐</span> Delayed Scan
+                                        </th>
+                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
+                                            等待時間 <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--warm-gray-400)' }}>(打藥→Delayed開始)</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {schedule.map((p, idx) => {
+                                        const waitTime = p.delayedStart - p.injTime;
+                                        const isOverLimit = waitTime > config.maxWaitLimit;
+                                        const isNewBatch = idx > 0 && schedule[idx - 1].batch !== p.batch;
+
+                                        return (
+                                            <tr
+                                                key={p.id}
+                                                className="table-row"
+                                                style={{
+                                                    borderBottom: '1px solid var(--warm-gray-100)',
+                                                    transition: 'background 0.15s',
+                                                    borderTop: isNewBatch ? '3px solid #93c5fd' : 'none'
+                                                }}
+                                            >
+                                                <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--warm-gray-800)' }}>
+                                                    病人 {p.id}
+                                                    {result.batches && result.batches.length > 1 && (
+                                                        <span style={{
+                                                            marginLeft: '8px',
+                                                            fontSize: '11px',
+                                                            background: `hsl(${210 + (p.batch - 1) * 30}, 80%, 85%)`,
+                                                            color: `hsl(${210 + (p.batch - 1) * 30}, 60%, 35%)`,
+                                                            padding: '2px 8px',
+                                                            borderRadius: '10px'
+                                                        }}>
+                                                            第 {p.batch} 批
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '14px 16px', color: '#e11d48', fontWeight: 700 }}>
+                                                    {minutesToTime(p.injTime)}
+                                                </td>
+                                                <td style={{ padding: '14px 16px', color: '#2563eb', fontWeight: 500 }}>
+                                                    {minutesToTime(p.earlyStart)}-{minutesToTime(p.earlyEnd)}
+                                                </td>
+                                                <td style={{ padding: '14px 16px', color: '#ea580c', fontWeight: 500 }}>
+                                                    {p.delayedStart ? `${minutesToTime(p.delayedStart)}-${minutesToTime(p.delayedEnd)}` : '-'}
+                                                </td>
+                                                <td style={{ padding: '14px 16px' }}>
+                                                    <span style={{
+                                                        color: isOverLimit ? '#dc2626' : '#16a34a',
+                                                        fontWeight: 600
+                                                    }}>
+                                                        {Math.floor(waitTime / 60)}h {waitTime % 60}m
+                                                        {isOverLimit && ' ⚠️'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* 甘特圖 - 格子狀時間軸 */}
+                    {schedule.length > 0 && (() => {
+                        // 計算時間範圍，對齊到30分鐘
+                        const allTimes = schedule.flatMap(p => [p.earlyStart, p.earlyEnd, p.delayedStart, p.delayedEnd].filter(t => t !== null));
+                        const rawMin = Math.min(...allTimes);
+                        const rawMax = Math.max(...allTimes);
+                        const gridStart = Math.floor(rawMin / 30) * 30;
+                        const gridEnd = Math.ceil(rawMax / 30) * 30;
+                        const totalCells = (gridEnd - gridStart) / 5; // 每5分鐘一格
+                        const cellWidth = 18; // 每格寬度(px)
+
+                        // 生成時間標記（每30分鐘）
+                        const hourMarkers = [];
+                        for (let t = gridStart; t <= gridEnd; t += 30) {
+                            hourMarkers.push(t);
+                        }
+
+                        // 判斷任務佔用哪些格子
+                        const getCellRange = (start, end) => {
+                            const startCell = Math.floor((start - gridStart) / 5);
+                            const endCell = Math.ceil((end - gridStart) / 5);
+                            return { startCell, endCell, span: endCell - startCell };
+                        };
+
+                        return (
+                            <div className="card" style={{ overflow: 'hidden' }}>
+                                <div style={{
+                                    padding: '20px 24px',
+                                    borderBottom: '1px solid #dbeafe',
+                                    background: 'linear-gradient(135deg, var(--mint-50) 0%, #ecfeff 100%)'
+                                }}>
+                                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ fontSize: '20px' }}>📊</span>
+                                        機器使用時間軸
+                                        <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--warm-gray-500)', marginLeft: '8px' }}>
+                                            （每小格 5 分鐘）
+                                        </span>
+                                    </h3>
+                                </div>
+
+                                <div style={{ padding: '24px', overflowX: 'auto' }}>
+                                    {/* 圖例 */}
+                                    <div style={{ display: 'flex', gap: '24px', marginBottom: '20px', fontSize: '13px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)' }}></div>
+                                            <span style={{ color: 'var(--warm-gray-600)' }}>Early Scan</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'linear-gradient(135deg, #fdba74 0%, #fb923c 100%)' }}></div>
+                                            <span style={{ color: 'var(--warm-gray-600)' }}>Delayed Scan</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'var(--warm-gray-100)', border: '1px solid var(--warm-gray-200)' }}></div>
+                                            <span style={{ color: 'var(--warm-gray-600)' }}>空閒</span>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'inline-block', minWidth: 'fit-content' }}>
+                                        {/* 時間軸標頭 */}
+                                        <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '4px', paddingLeft: '70px' }}>
+                                            {hourMarkers.map((t, idx) => (
+                                                <div key={idx} style={{
+                                                    width: `${cellWidth * 6}px`,
+                                                    textAlign: 'left',
+                                                    fontSize: '11px',
+                                                    fontWeight: 600,
+                                                    color: 'var(--warm-gray-600)'
+                                                }}>
+                                                    {minutesToTime(t)}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* 格子表格 */}
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            {schedule.map((patient) => {
+                                                const earlyRange = getCellRange(patient.earlyStart, patient.earlyEnd);
+                                                const delayedRange = patient.delayedStart ? getCellRange(patient.delayedStart, patient.delayedEnd) : null;
+
+                                                return (
+                                                    <div key={patient.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <div style={{ width: '60px', fontSize: '13px', color: 'var(--warm-gray-600)', fontWeight: 500, textAlign: 'right' }}>
+                                                            病人 {patient.id}
+                                                        </div>
+                                                        <div style={{ display: 'flex' }}>
+                                                            {Array.from({ length: totalCells }, (_, cellIdx) => {
+                                                                const isEarly = cellIdx >= earlyRange.startCell && cellIdx < earlyRange.endCell;
+                                                                const isDelayed = delayedRange && cellIdx >= delayedRange.startCell && cellIdx < delayedRange.endCell;
+                                                                const is30MinBorder = (cellIdx + 1) % 6 === 0;
+
+                                                                let bg = 'var(--warm-gray-50)';
+                                                                let title = '';
+                                                                if (isEarly) {
+                                                                    bg = 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)';
+                                                                    title = `Early: ${minutesToTime(patient.earlyStart)} - ${minutesToTime(patient.earlyEnd)}`;
+                                                                } else if (isDelayed) {
+                                                                    bg = 'linear-gradient(135deg, #fdba74 0%, #fb923c 100%)';
+                                                                    title = `Delayed: ${minutesToTime(patient.delayedStart)} - ${minutesToTime(patient.delayedEnd)}`;
+                                                                }
+
+                                                                return (
+                                                                    <div
+                                                                        key={cellIdx}
+                                                                        title={title}
+                                                                        style={{
+                                                                            width: `${cellWidth}px`,
+                                                                            height: '24px',
+                                                                            background: bg,
+                                                                            borderRight: is30MinBorder ? '2px solid var(--warm-gray-300)' : '1px solid var(--warm-gray-200)',
+                                                                            borderTop: '1px solid var(--warm-gray-200)',
+                                                                            borderBottom: '1px solid var(--warm-gray-200)',
+                                                                            borderLeft: cellIdx === 0 ? '2px solid var(--warm-gray-300)' : 'none',
+                                                                            transition: 'transform 0.15s',
+                                                                            cursor: (isEarly || isDelayed) ? 'pointer' : 'default',
+                                                                        }}
+                                                                        onMouseOver={(e) => {
+                                                                            if (isEarly || isDelayed) e.target.style.transform = 'scaleY(1.2)';
+                                                                        }}
+                                                                        onMouseOut={(e) => {
+                                                                            e.target.style.transform = 'scaleY(1)';
+                                                                        }}
+                                                                    ></div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+
+                    {/* 列印簽名欄 */}
+                    <div className="print-only" style={{ background: 'white', padding: '24px', marginTop: '32px', borderTop: '2px solid var(--warm-gray-300)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>排程醫師簽名：__________________</p>
+                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>列印日期：{new Date().toLocaleDateString('zh-TW')}</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ 放射師工作清單 ============
+        const WorklistTab = ({ schedule, result }) => {
+            const [completedTasks, setCompletedTasks] = useState({});
+            const worklist = useMemo(() => generateWorklist(schedule), [schedule]);
+
+            const toggleComplete = (index) => {
+                setCompletedTasks(prev => ({ ...prev, [index]: !prev[index] }));
+            };
+
+            const completedCount = Object.values(completedTasks).filter(Boolean).length;
+            const progress = worklist.length > 0 ? (completedCount / worklist.length) * 100 : 0;
+
+            return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {/* 工作清單 */}
+                    <div className="card printable-section" style={{ overflow: 'hidden' }}>
+                        <div style={{
+                            padding: '20px 24px',
+                            borderBottom: '1px solid #dcfce7',
+                            background: 'linear-gradient(135deg, var(--mint-50) 0%, var(--mint-100) 100%)'
+                        }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ fontSize: '20px' }}>✅</span>
+                                執行清單
+                            </h3>
+                            <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
+                                依時間排序，照順序執行即可
+                            </p>
+                        </div>
+
+                        <div>
+                            {worklist.map((task, idx) => {
+                                const isDelayed = task.type === 'DELAYED';
+
+                                return (
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '16px',
+                                            padding: '14px 24px',
+                                            borderBottom: '1px solid var(--warm-gray-100)',
+                                            flexWrap: 'wrap'
+                                        }}
+                                    >
+                                        {/* 序號 */}
+                                        <div style={{
+                                            width: '28px',
+                                            height: '28px',
+                                            borderRadius: '50%',
+                                            background: 'var(--warm-gray-200)',
+                                            color: 'var(--warm-gray-600)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '13px',
+                                            fontWeight: 600
+                                        }}>
+                                            {idx + 1}
+                                        </div>
+
+                                        {/* 時間 */}
+                                        <div style={{ minWidth: '100px' }}>
+                                            <div style={{
+                                                fontSize: '17px',
+                                                fontWeight: 700,
+                                                color: 'var(--warm-gray-800)'
+                                            }}>
+                                                {minutesToTime(task.time)}-{minutesToTime(task.endTime)}
+                                            </div>
+                                        </div>
+
+                                        {/* 病人編號 */}
+                                        <div style={{
+                                            minWidth: '70px',
+                                            fontWeight: 600,
+                                            color: 'var(--warm-gray-700)'
+                                        }}>
+                                            病人 {task.patientId}
+                                        </div>
+
+                                        {/* 任務類型 */}
+                                        <div>
+                                            {isDelayed ? (
+                                                <span style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    padding: '5px 12px',
+                                                    borderRadius: '16px',
+                                                    background: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
+                                                    color: '#c2410c',
+                                                    fontSize: '13px',
+                                                    fontWeight: 600
+                                                }}>
+                                                    🕐 Delayed
+                                                </span>
+                                            ) : (
+                                                <span style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    padding: '5px 12px',
+                                                    borderRadius: '16px',
+                                                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+                                                    color: '#1d4ed8',
+                                                    fontSize: '13px',
+                                                    fontWeight: 600
+                                                }}>
+                                                    ⚡ Early
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* 工時 */}
+                                        <div style={{ fontSize: '13px', color: 'var(--warm-gray-500)', marginLeft: 'auto' }}>
+                                            {task.duration}min
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {worklist.length === 0 && (
+                                <div style={{ padding: '48px', textAlign: 'center', color: 'var(--warm-gray-400)' }}>
+                                    <div style={{ fontSize: '40px', marginBottom: '12px' }}>📭</div>
+                                    <p>尚未產生排程</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* 列印簽名欄 */}
+                    <div className="print-only" style={{ background: 'white', padding: '24px', marginTop: '32px', borderTop: '2px solid var(--warm-gray-300)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>執行放射師簽名：__________________</p>
+                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>日期：{new Date().toLocaleDateString('zh-TW')}</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ 主應用程式 ============
+        const App = () => {
+            const [patientCount, setPatientCount] = useState(5);
+            const [config, setConfig] = useState(DEFAULT_CONFIG);
+            const [activeTab, setActiveTab] = useState('planner');
+
+            const result = useMemo(() => calculateSchedule(patientCount, config), [patientCount, config]);
+
+            const handlePrint = () => window.print();
+
+            const handleConfigChange = (key, value) => {
+                setConfig(prev => ({ ...prev, [key]: value }));
+            };
+
+            return (
+                <div style={{ minHeight: '100vh' }}>
+                    {/* 頂部導航 */}
+                    <header className="no-print" style={{
+                        background: 'linear-gradient(135deg, #fce7f3 0%, #e9d5ff 50%, #dbeafe 100%)',
+                        borderBottom: '1px solid rgba(0,0,0,0.05)',
+                        padding: '16px 0'
+                    }}>
+                        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{
+                                    width: '44px',
+                                    height: '44px',
+                                    background: 'white',
+                                    borderRadius: '14px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                                    fontSize: '22px'
+                                }}>
+                                    🩺
+                                </div>
+                                <div>
+                                    <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: 'var(--warm-gray-800)' }}>
+                                        PET 智慧排程助手
+                                    </h1>
+                                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--warm-gray-600)' }}>Smart PET Scheduler</p>
+                                </div>
+                            </div>
+
+                            <button onClick={handlePrint} className="btn-soft" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '10px 18px',
+                                background: 'white',
+                                border: 'none',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                color: 'var(--warm-gray-700)',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                            }}>
+                                🖨️ 列印
+                            </button>
+                        </div>
+                    </header>
+
+                    <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 20px' }}>
+                        {/* 參數輸入區 */}
+                        <div className="no-print card" style={{ marginBottom: '24px', overflow: 'hidden' }}>
+                            <div style={{ padding: '24px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: '24px' }}>
+                                    {/* 病人數量 */}
+                                    <div style={{ flex: '1', minWidth: '200px' }}>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            今日病人數量
+                                        </label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <button onClick={() => setPatientCount(Math.max(0, patientCount - 1))} className="btn-soft" style={{
+                                                width: '40px', height: '40px', borderRadius: '12px',
+                                                background: 'var(--pink-100)', border: 'none', cursor: 'pointer',
+                                                fontSize: '18px', color: 'var(--pink-500)'
+                                            }}>−</button>
+                                            <input
+                                                type="number"
+                                                value={patientCount}
+                                                onChange={(e) => setPatientCount(Math.max(0, parseInt(e.target.value) || 0))}
+                                                className="input-soft"
+                                                style={{ width: '70px', textAlign: 'center', fontSize: '22px', fontWeight: 700 }}
+                                            />
+                                            <button onClick={() => setPatientCount(patientCount + 1)} className="btn-soft" style={{
+                                                width: '40px', height: '40px', borderRadius: '12px',
+                                                background: 'var(--pink-100)', border: 'none', cursor: 'pointer',
+                                                fontSize: '18px', color: 'var(--pink-500)'
+                                            }}>+</button>
+                                            <span style={{ color: 'var(--warm-gray-500)' }}>位</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 開始時間 */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            開始打藥時間
+                                        </label>
+                                        <input
+                                            type="time"
+                                            value={config.startTime}
+                                            onChange={(e) => handleConfigChange('startTime', e.target.value)}
+                                            className="input-soft"
+                                        />
+                                    </div>
+
+                                    {/* Early Scan */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            Early Scan (分鐘)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={config.earlyScanDuration}
+                                            onChange={(e) => handleConfigChange('earlyScanDuration', parseInt(e.target.value) || 0)}
+                                            className="input-soft"
+                                            style={{ width: '80px' }}
+                                        />
+                                    </div>
+
+                                    {/* Delayed Scan */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            Delayed Scan (分鐘) <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--warm-gray-400)' }}>0=不需要</span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={config.delayedScanDuration}
+                                            onChange={(e) => handleConfigChange('delayedScanDuration', Math.max(0, parseInt(e.target.value) || 0))}
+                                            className="input-soft"
+                                            style={{ width: '80px' }}
+                                        />
+                                    </div>
+
+                                    {/* Uptake Time */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            Uptake Time (分鐘)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={config.uptakeTime}
+                                            onChange={(e) => handleConfigChange('uptakeTime', parseInt(e.target.value) || 0)}
+                                            className="input-soft"
+                                            style={{ width: '80px' }}
+                                        />
+                                    </div>
+
+                                    {/* 最小等待時間 */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            最小等待 (分鐘)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={config.minWaitLimit}
+                                            onChange={(e) => handleConfigChange('minWaitLimit', parseInt(e.target.value) || 0)}
+                                            className="input-soft"
+                                            style={{ width: '80px' }}
+                                        />
+                                    </div>
+
+                                    {/* 最大等待時間 */}
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
+                                            最大等待 (分鐘)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={config.maxWaitLimit}
+                                            onChange={(e) => handleConfigChange('maxWaitLimit', parseInt(e.target.value) || 0)}
+                                            className="input-soft"
+                                            style={{ width: '80px' }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* 午休時間設定 */}
+                                <div style={{
+                                    marginTop: '16px',
+                                    padding: '16px',
+                                    background: 'var(--warm-gray-50)',
+                                    borderRadius: '12px',
+                                    border: '1px solid var(--warm-gray-100)'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: config.lunchBreakEnabled ? '16px' : '0' }}>
+                                        <label style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            fontWeight: 600,
+                                            color: 'var(--warm-gray-700)'
+                                        }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={config.lunchBreakEnabled}
+                                                onChange={(e) => handleConfigChange('lunchBreakEnabled', e.target.checked)}
+                                                style={{
+                                                    width: '18px',
+                                                    height: '18px',
+                                                    accentColor: 'var(--pink-400)'
+                                                }}
+                                            />
+                                            🍔 中午空機時間
+                                        </label>
+                                        <span style={{ fontSize: '12px', color: 'var(--warm-gray-500)' }}>
+                                            （機器休息，但可繼續打藥）
+                                        </span>
+                                    </div>
+
+                                    {config.lunchBreakEnabled && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <label style={{ fontSize: '13px', color: 'var(--warm-gray-600)' }}>開始</label>
+                                                <input
+                                                    type="time"
+                                                    value={config.lunchBreakStart}
+                                                    onChange={(e) => handleConfigChange('lunchBreakStart', e.target.value)}
+                                                    className="input-soft"
+                                                    style={{ width: '110px' }}
+                                                />
+                                            </div>
+                                            <span style={{ color: 'var(--warm-gray-400)' }}>→</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <label style={{ fontSize: '13px', color: 'var(--warm-gray-600)' }}>結束</label>
+                                                <input
+                                                    type="time"
+                                                    value={config.lunchBreakEnd}
+                                                    onChange={(e) => handleConfigChange('lunchBreakEnd', e.target.value)}
+                                                    className="input-soft"
+                                                    style={{ width: '110px' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* 模式狀態 */}
+                            {patientCount > 0 && (
+                                <div style={{
+                                    padding: '14px 24px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    flexWrap: 'wrap',
+                                    gap: '12px',
+                                    borderTop: '1px solid var(--warm-gray-100)',
+                                    background: result.mode === 'BATCH'
+                                        ? 'linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%)'
+                                        : result.mode === 'AUTO_INTERLEAVED'
+                                            ? 'linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%)'
+                                            : result.mode === 'EARLY_ONLY'
+                                                ? 'linear-gradient(90deg, #fef3c7 0%, #fde68a 100%)'
+                                                : result.mode === 'ERROR'
+                                                    ? 'linear-gradient(90deg, #fee2e2 0%, #fecaca 100%)'
+                                                    : 'var(--warm-gray-50)'
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                        {result.mode === 'BATCH' && (
+                                            <>
+                                                <span style={{ fontSize: '22px' }}>✅</span>
+                                                <span style={{ fontWeight: 700, color: '#166534' }}>批次模式</span>
+                                                <span style={{ fontSize: '13px', color: '#15803d' }}>依序完成所有 Early 後再做 Delayed</span>
+                                            </>
+                                        )}
+                                        {result.mode === 'AUTO_INTERLEAVED' && (
+                                            <>
+                                                <span style={{ fontSize: '22px' }}>🔄</span>
+                                                <span style={{ fontWeight: 700, color: '#1e40af' }}>自動優化排程</span>
+                                                <span style={{ fontSize: '13px', color: '#1d4ed8' }}>
+                                                    {result.summary}
+                                                </span>
+                                            </>
+                                        )}
+                                        {result.mode === 'EARLY_ONLY' && (
+                                            <>
+                                                <span style={{ fontSize: '22px' }}>⚡</span>
+                                                <span style={{ fontWeight: 700, color: '#92400e' }}>僅 Early Scan</span>
+                                                <span style={{ fontSize: '13px', color: '#a16207' }}>病人不需要 Delayed Scan</span>
+                                            </>
+                                        )}
+                                        {result.mode === 'ERROR' && (
+                                            <>
+                                                <span style={{ fontSize: '22px' }}>❌</span>
+                                                <span style={{ fontWeight: 700, color: '#dc2626' }}>參數錯誤</span>
+                                                <span style={{ fontSize: '13px', color: '#b91c1c' }}>{result.error}</span>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {result.maxPatientWaitTime && (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px' }}>
+                                            <div style={{ color: 'var(--warm-gray-600)' }}>
+                                                最長等待：
+                                                <span style={{ fontWeight: 700, marginLeft: '4px', color: '#16a34a' }}>
+                                                    {Math.floor(result.maxPatientWaitTime / 60)}h {result.maxPatientWaitTime % 60}m
+                                                </span>
+                                            </div>
+                                            {result.batches && result.batches.length > 1 && (
+                                                <div style={{ color: 'var(--warm-gray-600)' }}>
+                                                    總共 <span style={{ fontWeight: 700, color: '#1d4ed8' }}>{result.batches.length}</span> 批
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Tab 切換 */}
+                        <div className="no-print" style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+                            <button
+                                onClick={() => setActiveTab('planner')}
+                                className="btn-soft"
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                    padding: '12px 24px', borderRadius: '14px', border: 'none',
+                                    cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+                                    background: activeTab === 'planner'
+                                        ? 'linear-gradient(135deg, #e9d5ff 0%, #f5d0fe 100%)'
+                                        : 'white',
+                                    color: activeTab === 'planner' ? '#7c3aed' : 'var(--warm-gray-600)',
+                                    boxShadow: activeTab === 'planner' ? '0 4px 14px rgba(124, 58, 237, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
+                                }}
+                            >
+                                📋 醫師規劃
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('worklist')}
+                                className="btn-soft"
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                    padding: '12px 24px', borderRadius: '14px', border: 'none',
+                                    cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+                                    background: activeTab === 'worklist'
+                                        ? 'linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)'
+                                        : 'white',
+                                    color: activeTab === 'worklist' ? '#166534' : 'var(--warm-gray-600)',
+                                    boxShadow: activeTab === 'worklist' ? '0 4px 14px rgba(22, 101, 52, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
+                                }}
+                            >
+                                ✅ 放射師清單
+                            </button>
+                        </div>
+
+                        {/* Tab 內容 */}
+                        {activeTab === 'planner' ? (
+                            <PlannerTab schedule={result.schedule} result={result} config={config} />
+                        ) : (
+                            <WorklistTab schedule={result.schedule} result={result} />
+                        )}
+                    </main>
+
+                    {/* 頁腳 */}
+                    <footer className="no-print" style={{
+                        marginTop: '48px',
+                        padding: '20px',
+                        textAlign: 'center',
+                        fontSize: '13px',
+                        color: 'var(--warm-gray-400)'
+                    }}>
+                        ✨ PET 智慧排程助手 v1.1 | 僅供參考，實際操作請依臨床判斷
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

@@ -132,6 +132,23 @@
             td {
                 padding: 10px 8px !important;
             }
+
+            /* 手機輸入優化 */
+            .input-soft {
+                font-size: 16px !important;
+                /* 防止 iOS 放大 */
+                padding: 12px 16px !important;
+                min-height: 48px;
+            }
+
+            .config-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            .patient-input {
+                font-size: 36px !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -143,6 +160,22 @@
             td {
                 padding: 8px 6px !important;
             }
+
+            .config-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .tab-btn {
+                padding: 10px 16px !important;
+                font-size: 13px !important;
+            }
+        }
+
+        /* FA Icon 樣式 */
+        .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* 按鈕 hover 效果 */
@@ -498,7 +531,7 @@
                             background: 'linear-gradient(135deg, var(--lavender-50) 0%, var(--pink-50) 100%)'
                         }}>
                             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ fontSize: '20px' }}>💉</span>
+                                <i className="fa-solid fa-syringe" style={{ fontSize: '18px', color: '#e11d48' }}></i>
                                 建議打藥時刻表
                             </h3>
                             <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
@@ -512,13 +545,13 @@
                                     <tr style={{ background: 'var(--warm-gray-50)', color: 'var(--warm-gray-600)' }}>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>序號</th>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            <span style={{ color: '#e11d48' }}>💉</span> 打藥時間
+                                            <i className="fa-solid fa-syringe" style={{ color: '#e11d48', marginRight: '6px' }}></i> 打藥時間
                                         </th>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            <span style={{ color: '#3b82f6' }}>⚡</span> Early Scan
+                                            <i className="fa-solid fa-bolt" style={{ color: '#3b82f6', marginRight: '6px' }}></i> Early Scan
                                         </th>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            <span style={{ color: '#f97316' }}>🕐</span> Delayed Scan
+                                            <i className="fa-regular fa-clock" style={{ color: '#f97316', marginRight: '6px' }}></i> Delayed Scan
                                         </th>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
                                             等待時間 <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--warm-gray-400)' }}>(打藥→Delayed開始)</span>
@@ -750,7 +783,7 @@
                             background: 'linear-gradient(135deg, var(--mint-50) 0%, var(--mint-100) 100%)'
                         }}>
                             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ fontSize: '20px' }}>✅</span>
+                                <i className="fa-solid fa-clipboard-check" style={{ fontSize: '18px', color: '#16a34a' }}></i>
                                 執行清單
                             </h3>
                             <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
@@ -824,7 +857,7 @@
                                                     fontSize: '13px',
                                                     fontWeight: 600
                                                 }}>
-                                                    🕐 Delayed
+                                                    <i className="fa-regular fa-clock" style={{ marginRight: '4px' }}></i> Delayed
                                                 </span>
                                             ) : (
                                                 <span style={{
@@ -838,7 +871,7 @@
                                                     fontSize: '13px',
                                                     fontWeight: 600
                                                 }}>
-                                                    ⚡ Early
+                                                    <i className="fa-solid fa-bolt" style={{ marginRight: '4px' }}></i> Early
                                                 </span>
                                             )}
                                         </div>
@@ -853,7 +886,7 @@
 
                             {worklist.length === 0 && (
                                 <div style={{ padding: '48px', textAlign: 'center', color: 'var(--warm-gray-400)' }}>
-                                    <div style={{ fontSize: '40px', marginBottom: '12px' }}>📭</div>
+                                    <i className="fa-regular fa-folder-open" style={{ fontSize: '40px', marginBottom: '12px', display: 'block' }}></i>
                                     <p>尚未產生排程</p>
                                 </div>
                             )}
@@ -1138,14 +1171,14 @@
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                                         {result.mode === 'BATCH' && (
                                             <>
-                                                <span style={{ fontSize: '22px' }}>✅</span>
+                                                <i className="fa-solid fa-check-circle" style={{ fontSize: '20px', color: '#166534' }}></i>
                                                 <span style={{ fontWeight: 700, color: '#166534' }}>批次模式</span>
                                                 <span style={{ fontSize: '13px', color: '#15803d' }}>依序完成所有 Early 後再做 Delayed</span>
                                             </>
                                         )}
                                         {result.mode === 'AUTO_INTERLEAVED' && (
                                             <>
-                                                <span style={{ fontSize: '22px' }}>🔄</span>
+                                                <i className="fa-solid fa-arrows-rotate" style={{ fontSize: '20px', color: '#1e40af' }}></i>
                                                 <span style={{ fontWeight: 700, color: '#1e40af' }}>自動優化排程</span>
                                                 <span style={{ fontSize: '13px', color: '#1d4ed8' }}>
                                                     {result.summary}
@@ -1154,14 +1187,14 @@
                                         )}
                                         {result.mode === 'EARLY_ONLY' && (
                                             <>
-                                                <span style={{ fontSize: '22px' }}>⚡</span>
+                                                <i className="fa-solid fa-bolt" style={{ fontSize: '20px', color: '#92400e' }}></i>
                                                 <span style={{ fontWeight: 700, color: '#92400e' }}>僅 Early Scan</span>
                                                 <span style={{ fontSize: '13px', color: '#a16207' }}>病人不需要 Delayed Scan</span>
                                             </>
                                         )}
                                         {result.mode === 'ERROR' && (
                                             <>
-                                                <span style={{ fontSize: '22px' }}>❌</span>
+                                                <i className="fa-solid fa-circle-xmark" style={{ fontSize: '20px', color: '#dc2626' }}></i>
                                                 <span style={{ fontWeight: 700, color: '#dc2626' }}>參數錯誤</span>
                                                 <span style={{ fontSize: '13px', color: '#b91c1c' }}>{result.error}</span>
                                             </>
@@ -1203,7 +1236,7 @@
                                     boxShadow: activeTab === 'planner' ? '0 4px 14px rgba(124, 58, 237, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
                                 }}
                             >
-                                📋 醫師規劃
+                                <i className="fa-solid fa-clipboard-list" style={{ marginRight: '6px' }}></i> 醫師規劃
                             </button>
                             <button
                                 onClick={() => setActiveTab('worklist')}
@@ -1219,7 +1252,7 @@
                                     boxShadow: activeTab === 'worklist' ? '0 4px 14px rgba(22, 101, 52, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
                                 }}
                             >
-                                ✅ 放射師清單
+                                <i className="fa-solid fa-list-check" style={{ marginRight: '6px' }}></i> 放射師清單
                             </button>
                         </div>
 
@@ -1239,7 +1272,7 @@
                         fontSize: '13px',
                         color: 'var(--warm-gray-400)'
                     }}>
-                        ✨ PET 智慧排程助手 v1.1 | 僅供參考，實際操作請依臨床判斷
+                        <i className="fa-regular fa-star" style={{ marginRight: '6px' }}></i> PET 智慧排程助手 v2.0 | 僅供參考，實際操作請依臨床判斷
                     </footer>
                 </div>
             );

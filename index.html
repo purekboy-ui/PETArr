@@ -181,6 +181,17 @@
                 width: 100% !important;
                 min-width: 140px !important;
             }
+
+            /* 甘特圖在小螢幕上隱藏 */
+            .gantt-chart-section {
+                display: none !important;
+            }
+
+            /* 空機分析在小螢幕上堆疊 */
+            .idle-gap-item {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
         }
 
         /* FA Icon 樣式 */
@@ -706,28 +717,47 @@
 
             // ========== 計算空機時間 ==========
             let machineIdleTime = 0;
+            let idleGapDetails = []; // 詳細空隙資訊
+
             if (allSchedule.length > 0) {
-                // 收集所有掃描時段
+                // 收集所有掃描時段，標記類型
                 const scanSlots = [];
                 allSchedule.forEach(p => {
-                    scanSlots.push({ start: p.earlyStart, end: p.earlyEnd });
+                    scanSlots.push({
+                        start: p.earlyStart,
+                        end: p.earlyEnd,
+                        type: p.type,
+                        id: p.id,
+                        scanType: 'Early'
+                    });
                     if (p.delayedStart !== null) {
-                        scanSlots.push({ start: p.delayedStart, end: p.delayedEnd });
+                        scanSlots.push({
+                            start: p.delayedStart,
+                            end: p.delayedEnd,
+                            type: p.type,
+                            id: p.id,
+                            scanType: 'Delayed'
+                        });
                     }
                 });
 
                 // 按開始時間排序
                 scanSlots.sort((a, b) => a.start - b.start);
 
-                // 計算空隙時間
-                const firstScanStart = scanSlots[0].start;
-                const lastScanEnd = scanSlots[scanSlots.length - 1].end;
-
-                // 找出所有空隙
+                // 找出所有空隙並記錄詳情
                 for (let i = 0; i < scanSlots.length - 1; i++) {
                     const gap = scanSlots[i + 1].start - scanSlots[i].end;
                     if (gap > 0) {
                         machineIdleTime += gap;
+                        idleGapDetails.push({
+                            startTime: scanSlots[i].end,
+                            endTime: scanSlots[i + 1].start,
+                            duration: gap,
+                            beforeScan: `${scanSlots[i].type} ${scanSlots[i].id} ${scanSlots[i].scanType}`,
+                            afterScan: `${scanSlots[i + 1].type} ${scanSlots[i + 1].id} ${scanSlots[i + 1].scanType}`,
+                            beforeType: scanSlots[i].type,
+                            afterType: scanSlots[i + 1].type
+                        });
                     }
                 }
             }
@@ -741,6 +771,7 @@
                 poslumaWarnings,
                 optimizationSuggestions,
                 machineIdleTime,
+                idleGapDetails,
                 maxBatchSize: batches.length > 0 ? Math.floor((maxWaitLimit - uptakeTime) / earlyScanDuration) : null,
                 maxPatientWaitTime: maxWait,
                 minPatientWaitTime: minWait,
@@ -971,7 +1002,7 @@
                         };
 
                         return (
-                            <div className="card" style={{ overflow: 'hidden' }}>
+                            <div className="card gantt-chart-section" style={{ overflow: 'hidden' }}>
                                 <div style={{
                                     padding: '20px 24px',
                                     borderBottom: '1px solid #dbeafe',
@@ -1360,7 +1391,8 @@
                                             <input
                                                 type="number"
                                                 value={patientCount}
-                                                onChange={(e) => setPatientCount(Math.max(0, parseInt(e.target.value) || 0))}
+                                                onChange={(e) => setPatientCount(e.target.value === '' ? 0 : parseInt(e.target.value))}
+                                                onBlur={(e) => setPatientCount(Math.max(0, parseInt(e.target.value) || 0))}
                                                 className="input-soft patient-count-input"
                                             />
                                             <button onClick={() => setPatientCount(patientCount + 1)} className="btn-soft" style={{
@@ -1682,7 +1714,7 @@
                                                     ))}
                                                 </div>
                                                 <p style={{ margin: '8px 0 0 0', fontSize: '11px', color: '#6b7280' }}>
-                                                    留空 = 系統自動排入最佳空隙
+
                                                 </p>
                                             </div>
                                         )}
@@ -1788,6 +1820,48 @@
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* 空機時間詳細分析 */}
+                                    {result.idleGapDetails && result.idleGapDetails.length > 0 && (
+                                        <div style={{
+                                            marginTop: '12px',
+                                            padding: '10px 12px',
+                                            background: 'rgba(251, 146, 60, 0.1)',
+                                            borderRadius: '8px',
+                                            border: '1px solid rgba(251, 146, 60, 0.3)'
+                                        }}>
+                                            <div style={{ fontSize: '12px', fontWeight: 600, color: '#ea580c', marginBottom: '6px' }}>
+                                                空機時間分析
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: 'var(--warm-gray-600)' }}>
+                                                {result.idleGapDetails.map((gap, idx) => (
+                                                    <div key={idx} style={{
+                                                        display: 'flex',
+                                                        gap: '8px',
+                                                        marginBottom: '4px',
+                                                        alignItems: 'center',
+                                                        flexWrap: 'wrap'
+                                                    }}>
+                                                        <span style={{
+                                                            background: '#fed7aa',
+                                                            padding: '2px 6px',
+                                                            borderRadius: '4px',
+                                                            fontWeight: 600,
+                                                            color: '#c2410c'
+                                                        }}>
+                                                            {gap.duration}min
+                                                        </span>
+                                                        <span>
+                                                            {minutesToTime(gap.startTime)} - {minutesToTime(gap.endTime)}
+                                                        </span>
+                                                        <span style={{ color: '#9ca3af' }}>
+                                                            ({gap.beforeType} {gap.beforeScan.split(' ')[1]} 後 → {gap.afterType} {gap.afterScan.split(' ')[1]} 前)
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

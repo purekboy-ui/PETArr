@@ -4,6 +4,8 @@
 
 本系統能夠自動計算最佳打藥時間，解決 uptake time 與機器排程的衝突，確保所有病人的等待時間都在安全範圍內，並最大化機器使用效率。
 
+**線上試用 (Live Demo):** [https://purekboy-ui.github.io/PETArr/](https://purekboy-ui.github.io/PETArr/)
+
 ## 核心功能
 
 ### 1. 智慧排程演算法

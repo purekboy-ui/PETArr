@@ -305,7 +305,7 @@
             startTime: "08:30",
             earlyScanDuration: 35,
             delayedScanDuration: 20,
-            uptakeTime: 60,
+            uptakeTime: 50,      // 預設 50 分鐘
             minWaitLimit: 120,   // 打藥到 Delayed 開始 的最小時間 (90-240)
             maxWaitLimit: 180,   // 打藥到 Delayed 開始 的最大時間 (90-240)
             lunchBreakEnabled: false,
@@ -317,6 +317,17 @@
             poslumaDelayedScan: 0,         // 預設不需要 Delayed
             poslumaUptakeTime: 60,         // 預設 60 分鐘
             poslumaInjectionTimes: [],     // 自訂打藥時間 ["09:00", "10:30"]
+        };
+
+        // Dr Huang 偏好參數
+        const DR_HUANG_PRESET = {
+            patientCount: 9,
+            startTime: "09:00",
+            earlyScanDuration: 35,
+            delayedScanDuration: 10,
+            uptakeTime: 60,
+            minWaitLimit: 120,
+            maxWaitLimit: 180,
         };
 
         // ============ 工具函數 ============
@@ -333,22 +344,26 @@
 
         // ============ 核心排程演算法（FDG + Posluma 混合排程） ============
         const calculateSchedule = (fdgCount, config) => {
-            const {
-                startTime,
-                earlyScanDuration,
-                delayedScanDuration,
-                uptakeTime,
-                minWaitLimit,
-                maxWaitLimit,
-                lunchBreakEnabled,
-                lunchBreakStart,
-                lunchBreakEnd,
-                poslumaCount,
-                poslumaEarlyScan,
-                poslumaDelayedScan,
-                poslumaUptakeTime,
-                poslumaInjectionTimes,
-            } = config;
+            // 確保所有數值都是有效的數字，避免輸入中間狀態造成計算錯誤
+            const safeNumber = (val, defaultVal, minVal = 1) => {
+                const num = typeof val === 'number' ? val : parseInt(val);
+                return (isNaN(num) || num < minVal) ? defaultVal : num;
+            };
+
+            const startTime = config.startTime || "08:30";
+            const earlyScanDuration = safeNumber(config.earlyScanDuration, 35);
+            const delayedScanDuration = safeNumber(config.delayedScanDuration, 0, 0);
+            const uptakeTime = safeNumber(config.uptakeTime, 50);
+            const minWaitLimit = safeNumber(config.minWaitLimit, 120, 90);
+            const maxWaitLimit = safeNumber(config.maxWaitLimit, 180, 90);
+            const lunchBreakEnabled = config.lunchBreakEnabled;
+            const lunchBreakStart = config.lunchBreakStart || "12:00";
+            const lunchBreakEnd = config.lunchBreakEnd || "13:00";
+            const poslumaCount = safeNumber(config.poslumaCount, 0, 0);
+            const poslumaEarlyScan = safeNumber(config.poslumaEarlyScan, 20);
+            const poslumaDelayedScan = safeNumber(config.poslumaDelayedScan, 0, 0);
+            const poslumaUptakeTime = safeNumber(config.poslumaUptakeTime, 60);
+            const poslumaInjectionTimes = config.poslumaInjectionTimes || [];
 
             const startMinutes = timeToMinutes(startTime);
             const lunchStart = lunchBreakEnabled ? timeToMinutes(lunchBreakStart) : null;
@@ -820,8 +835,31 @@
             return tasks;
         };
 
+        // ============ 下載圖片功能 ============
+        const downloadTableAsImage = (tableElement, filename = 'schedule') => {
+            if (!tableElement) return;
+
+            // 動態載入 html2canvas
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = () => {
+                html2canvas(tableElement, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `${filename}_${new Date().toISOString().slice(0, 10)}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            };
+            document.head.appendChild(script);
+        };
+
         // ============ 醫師規劃面板 ============
-        const PlannerTab = ({ schedule, result, config }) => {
+        const PlannerTab = ({ schedule, result, config, onDownload }) => {
             const ganttData = useMemo(() => {
                 if (!schedule.length) return { tasks: [], minTime: 0, maxTime: 0 };
 
@@ -865,19 +903,47 @@
             return (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {/* 打藥時刻表 */}
-                    <div className="card printable-section" style={{ overflow: 'hidden' }}>
+                    <div id="injection-schedule-table" className="card printable-section" style={{ overflow: 'hidden' }}>
                         <div style={{
                             padding: '20px 24px',
                             borderBottom: '1px solid #f3e8ff',
-                            background: 'linear-gradient(135deg, var(--lavender-50) 0%, var(--pink-50) 100%)'
+                            background: 'linear-gradient(135deg, var(--lavender-50) 0%, var(--pink-50) 100%)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            flexWrap: 'wrap',
+                            gap: '12px'
                         }}>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-syringe" style={{ fontSize: '18px', color: '#e11d48' }}></i>
-                                建議打藥時刻表
-                            </h3>
-                            <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
-                                將此表交給護理師，照表打藥即可
-                            </p>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <i className="fa-solid fa-syringe" style={{ fontSize: '18px', color: '#e11d48' }}></i>
+                                    建議打藥時刻表
+                                </h3>
+                                <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
+                                    將此表交給護理師，照表打藥即可
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => onDownload && onDownload()}
+                                className="btn-soft no-print"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    padding: '8px 14px',
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '10px',
+                                    fontSize: '13px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
+                                }}
+                            >
+                                <i className="fa-solid fa-download"></i>
+                                下載圖片
+                            </button>
                         </div>
 
                         <div style={{ overflowX: 'auto' }}>
@@ -1450,6 +1516,65 @@
                         {/* 參數輸入區 */}
                         <div className="no-print card" style={{ marginBottom: '24px', overflow: 'hidden' }}>
                             <div style={{ padding: '24px' }}>
+                                {/* 預設按鈕區 */}
+                                <div style={{ marginBottom: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                    <button
+                                        onClick={() => {
+                                            setPatientCount(DR_HUANG_PRESET.patientCount);
+                                            setConfig(prev => ({
+                                                ...prev,
+                                                startTime: DR_HUANG_PRESET.startTime,
+                                                earlyScanDuration: DR_HUANG_PRESET.earlyScanDuration,
+                                                delayedScanDuration: DR_HUANG_PRESET.delayedScanDuration,
+                                                uptakeTime: DR_HUANG_PRESET.uptakeTime,
+                                                minWaitLimit: DR_HUANG_PRESET.minWaitLimit,
+                                                maxWaitLimit: DR_HUANG_PRESET.maxWaitLimit,
+                                            }));
+                                        }}
+                                        className="btn-soft"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            padding: '10px 18px',
+                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '12px',
+                                            fontSize: '13px',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-user-doctor"></i>
+                                        Dr Huang 偏好設定
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setPatientCount(5);
+                                            setConfig(DEFAULT_CONFIG);
+                                        }}
+                                        className="btn-soft"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            padding: '10px 18px',
+                                            background: 'var(--warm-gray-100)',
+                                            color: 'var(--warm-gray-700)',
+                                            border: '1px solid var(--warm-gray-200)',
+                                            borderRadius: '12px',
+                                            fontSize: '13px',
+                                            fontWeight: 600,
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-rotate-left"></i>
+                                        回復預設
+                                    </button>
+                                </div>
+
                                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: '24px' }}>
                                     {/* FDG 病人數量 */}
                                     <div style={{ flex: '1', minWidth: '200px' }}>
@@ -2052,7 +2177,15 @@
                         {/* Tab 內容 */}
                         {
                             activeTab === 'planner' ? (
-                                <PlannerTab schedule={result.schedule} result={result} config={config} />
+                                <PlannerTab
+                                    schedule={result.schedule}
+                                    result={result}
+                                    config={config}
+                                    onDownload={() => {
+                                        const table = document.getElementById('injection-schedule-table');
+                                        if (table) downloadTableAsImage(table, 'injection_schedule');
+                                    }}
+                                />
                             ) : (
                                 <WorklistTab schedule={result.schedule} result={result} />
                             )

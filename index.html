@@ -11,66 +11,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --pink-50: #fdf2f8;
-            --pink-100: #fce7f3;
-            --pink-200: #fbcfe8;
-            --pink-300: #f9a8d4;
-            --pink-400: #f472b6;
-            --pink-500: #ec4899;
-            --rose-50: #fff1f2;
-            --rose-100: #ffe4e6;
-            --lavender-50: #faf5ff;
-            --lavender-100: #f3e8ff;
-            --lavender-200: #e9d5ff;
-            --mint-50: #f0fdf4;
-            --mint-100: #dcfce7;
-            --mint-200: #bbf7d0;
-            --peach-50: #fff7ed;
-            --peach-100: #ffedd5;
-            --cream: #fffbf7;
-            --warm-gray-50: #fafaf9;
-            --warm-gray-100: #f5f5f4;
-            --warm-gray-200: #e7e5e4;
-            --warm-gray-600: #78716c;
-            --warm-gray-700: #57534e;
-            --warm-gray-800: #44403c;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+
+            --teal-50: #f0fdfa;
+            --teal-100: #ccfbf1;
+            --teal-500: #14b8a6;
+            --teal-600: #0d9488;
+            --teal-700: #0f766e;
+
+            --navy-50: #f0f9ff;
+            --navy-100: #e0f2fe;
+            --navy-500: #0ea5e9;
+            --navy-600: #0284c7;
+            --navy-700: #0369a1;
+
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
         }
 
         * {
-            font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            background: linear-gradient(135deg, var(--pink-50) 0%, var(--lavender-50) 50%, var(--mint-50) 100%);
+            background-color: var(--slate-50);
+            color: var(--slate-800);
             min-height: 100vh;
         }
 
-        /* 呼吸燈動畫 */
-        @keyframes pulse-soft {
+        /* 數字專屬字型 - 等寬, 排版更整齊 */
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
 
-            0%,
-            100% {
+        /* 呼吸燈動畫取消，改為優雅的進場與漸變 */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
                 opacity: 1;
-                box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.3);
-            }
-
-            50% {
-                opacity: 0.85;
-                box-shadow: 0 0 12px 4px rgba(251, 146, 60, 0.2);
+                transform: translateY(0);
             }
         }
 
-        .pulse-delayed {
-            animation: pulse-soft 2.5s ease-in-out infinite;
-        }
-
-        /* 列印優化 - 只印 打藥時刻表 和 執行清單 */
+        /* 列印優化 */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm;
+            }
+
             body * {
                 visibility: hidden;
             }
@@ -85,13 +100,8 @@
                 left: 0;
                 top: 0;
                 width: 100%;
-                margin-bottom: 24px;
-                page-break-inside: avoid;
-            }
-
-            .printable-section:nth-of-type(2) {
-                position: relative;
-                margin-top: 24px;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             .no-print {
@@ -105,12 +115,56 @@
             body {
                 background: white !important;
                 -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
 
+            /* 強制列印框線與高對比字體 */
             .card {
                 box-shadow: none !important;
-                border: 1px solid #e5e7eb !important;
+                border: 2px solid #000 !important;
+                border-radius: 0 !important;
+            }
+
+            table {
+                border-collapse: collapse !important;
+            }
+
+            th,
+            td {
+                border-bottom: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            th {
+                border-top: 2px solid #000 !important;
+                border-bottom: 2px solid #000 !important;
+                background-color: transparent !important;
+            }
+
+            .timeline::before {
+                background-color: #000 !important;
+                width: 1px !important;
+            }
+
+            .timeline-dot {
+                border-color: #000 !important;
+                background-color: white !important;
+                border-width: 1px !important;
+            }
+
+            .print-border-solid {
+                border: 1px solid #000 !important;
+            }
+
+            .print-bold {
+                font-weight: 800 !important;
+                color: #000 !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .svg-story-container {
+                display: none !important;
             }
         }
 
@@ -118,139 +172,49 @@
             display: none;
         }
 
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .card {
-                border-radius: 12px !important;
-            }
-
-            table {
-                font-size: 12px !important;
-            }
-
-            th,
-            td {
-                padding: 10px 8px !important;
-            }
-
-            /* 手機輸入優化 */
-            .input-soft {
-                font-size: 16px !important;
-                /* 防止 iOS 放大 */
-                padding: 12px 16px !important;
-                min-height: 48px;
-            }
-
-            .config-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 12px !important;
-            }
-
-            .patient-input {
-                font-size: 36px !important;
-            }
+        /* 互動元件與卡片樣式 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--slate-200);
         }
 
-        @media (max-width: 480px) {
-            table {
-                font-size: 11px !important;
-            }
-
-            th,
-            td {
-                padding: 8px 6px !important;
-            }
-
-            .config-grid {
-                grid-template-columns: 1fr !important;
-            }
-
-            .tab-btn {
-                padding: 10px 16px !important;
-                font-size: 13px !important;
-            }
-
-            /* 優化建議在手機上垂直排列 */
-            .optimization-card {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-            }
-
-            /* 時間輸入框在手機上更寬 */
-            input[type="time"] {
-                width: 100% !important;
-                min-width: 140px !important;
-            }
-
-            /* 甘特圖在小螢幕上隱藏 */
-            .gantt-chart-section {
-                display: none !important;
-            }
-
-            /* 手機版摘要在小螢幕顯示 */
-            .mobile-schedule-summary {
-                display: block !important;
-            }
-
-            /* 空機分析在小螢幕上堆疊 */
-            .idle-gap-item {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-            }
+        /* 表格行 hover */
+        .table-row:hover {
+            background-color: var(--slate-50);
         }
 
-        /* 手機版摘要預設隱藏（桌面版） */
-        .mobile-schedule-summary {
-            display: none;
-        }
-
-        /* FA Icon 樣式 */
-        .icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 按鈕 hover 效果 */
+        /* 按鈕樣式 (高級質感) */
         .btn-soft {
             transition: all 0.2s ease;
         }
 
         .btn-soft:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .btn-soft:active {
             transform: translateY(0);
         }
 
-        /* 卡片 */
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-        }
-
-        /* 表格行 hover */
-        .table-row:hover {
-            background: var(--pink-50);
-        }
-
-        /* 輸入框 */
+        /* 醫療質感輸入框 */
         .input-soft {
-            border: 2px solid var(--warm-gray-200);
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-size: 15px;
+            border: 1px solid var(--slate-300);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
             transition: all 0.2s ease;
             outline: none;
+            background-color: var(--bg-card);
+            color: var(--slate-800);
+            font-family: 'Roboto Mono', monospace;
         }
 
         .input-soft:focus {
-            border-color: var(--pink-300);
-            box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.2);
+            border-color: var(--teal-500);
+            box-shadow: 0 0 0 3px var(--teal-100);
         }
 
         /* 隱藏 number input 的 spinner arrows */
@@ -265,31 +229,233 @@
             appearance: textfield;
         }
 
-        /* 病人數量輸入框 */
+        /* 病人數量輸入框專屬 */
         .patient-count-input {
-            width: 80px !important;
-            min-width: 80px;
+            width: 60px !important;
+            min-width: 60px;
             text-align: center;
-            font-size: 24px !important;
-            font-weight: 700;
-            padding: 8px 12px !important;
+            font-size: 18px !important;
+            font-weight: 600;
+            padding: 8px !important;
         }
 
-        /* 甘特圖條 */
-        .gantt-bar {
-            border-radius: 6px;
-            transition: all 0.2s ease;
+        /* 時間軸專屬樣式 (Vertical Timeline) */
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+            margin-top: 16px;
+            margin-bottom: 24px;
         }
 
-        .gantt-bar:hover {
-            filter: brightness(1.05);
-            transform: scaleY(1.15);
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            bottom: -24px;
+            left: 11px;
+            width: 2px;
+            background-color: var(--slate-200);
         }
 
-        /* 切斷點樣式 */
-        .cutoff-row {
-            background: linear-gradient(90deg, var(--peach-50) 0%, var(--peach-100) 100%);
-            border-left: 3px solid #fb923c;
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item:last-child::before {
+            /* 覆蓋掉最後一根線 */
+            content: '';
+            position: absolute;
+            top: 24px;
+            bottom: 0px;
+            /* actually we just want to suppress the main line. The main line is on .timeline, not item */
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -21.5px;
+            top: 4px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-card);
+            z-index: 10;
+        }
+
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--slate-400);
+            border-radius: 4px;
+            display: inline-block;
+            background: var(--bg-card);
+        }
+
+        /* 雙欄佈局 (Split-Pane) */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                display: grid;
+                grid-template-columns: 320px 1fr;
+                align-items: start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .input-soft {
+                font-size: 16px !important;
+                padding: 10px 14px !important;
+            }
+
+            .timeline {
+                padding-left: 20px;
+            }
+
+            .timeline::before {
+                left: 7px;
+            }
+
+            .timeline-dot {
+                left: -17.5px;
+            }
+        }
+
+        body.dark-mode {
+
+            --slate-50: #0f172a;
+            --slate-100: #1e293b;
+            --slate-200: #334155;
+            --slate-300: #475569;
+            --slate-400: #64748b;
+            --slate-500: #94a3b8;
+            --slate-600: #cbd5e1;
+            --slate-700: #e2e8f0;
+            --slate-800: #f1f5f9;
+            --slate-900: #f8fafc;
+
+            --teal-50: #042f2e;
+            --teal-100: #134e4a;
+            --teal-500: #0f766e;
+            --teal-600: #0d9488;
+            --teal-700: #14b8a6;
+            --teal-200: #115e59;
+
+            --navy-50: #082f49;
+            --navy-100: #0c4a6e;
+            --navy-200: #075985;
+            --navy-500: #0369a1;
+            --navy-600: #0284c7;
+            --navy-700: #0ea5e9;
+
+            --orange-50: #431407;
+            --orange-100: #7c2d12;
+            --orange-200: #9a3412;
+            --orange-500: #ea580c;
+            --orange-600: #f97316;
+
+            .card {
+                background: #1e293b;
+                border: 1px solid var(--slate-300);
+            }
+
+            .btn-soft {
+                background: #1e293b;
+                border: 1px solid var(--slate-300);
+                color: var(--slate-800);
+            }
+
+            .btn-soft:hover {
+                background: #334155;
+            }
+
+            .input-soft,
+            .custom-checkbox {
+                background: #0f172a;
+                border-color: var(--slate-300);
+                color: var(--slate-800);
+            }
+
+            #injection-schedule-table>div>div {
+                background: #1e293b !important;
+            }
+
+            #injection-schedule-table table {
+                background: #1e293b;
+            }
+
+            .timeline-dot {
+                background-color: var(--slate-100) !important;
+                border-color: var(--slate-300) !important;
+            }
+
+            .timeline-dot.delayed {
+                background-color: var(--orange-100) !important;
+                border-color: var(--orange-500) !important;
+            }
+
+            .timeline-dot.early {
+                background-color: var(--navy-100) !important;
+                border-color: var(--navy-500) !important;
+            }
+
+            header,
+            .left-pane>.card,
+            .right-pane>.card,
+            .right-pane>div.card {
+                background: #1e293b !important;
+            }
+
+            th,
+            td {
+                color: var(--slate-800) !important;
+            }
+
+            /* Fix dark mode specifically avoiding print interference */
+            @media print {
+                body.dark-mode {
+                    --bg-card: #ffffff;
+                    --bg-table-header: var(--slate-50);
+                    --slate-50: #f8fafc;
+                    --slate-100: #f1f5f9;
+                    --slate-200: #e2e8f0;
+                    --slate-300: #cbd5e1;
+                    --slate-400: #94a3b8;
+                    --slate-500: #64748b;
+                    --slate-600: #475569;
+                    --slate-700: #334155;
+                    --slate-800: #1e293b;
+                    --slate-900: #0f172a;
+
+                    --teal-50: #f0fdfa;
+                    --teal-100: #ccfbf1;
+                    --teal-500: #14b8a6;
+                    --teal-600: #0d9488;
+                    --teal-700: #0f766e;
+
+                    --navy-50: #f0f9ff;
+                    --navy-100: #e0f2fe;
+                    --navy-500: #0ea5e9;
+                    --navy-600: #0284c7;
+                    --navy-700: #0369a1;
+
+                    --orange-50: #fff7ed;
+                    --orange-100: #ffedd5;
+                    --orange-500: #f97316;
+                    --orange-600: #ea580c;
+                }
+            }
         }
     </style>
 </head>
@@ -835,437 +1001,286 @@
             return tasks;
         };
 
-        // ============ 下載圖片功能 ============
-        const downloadTableAsImage = (tableElement, filename = 'schedule') => {
-            if (!tableElement) return;
-
-            // 動態載入 html2canvas
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = () => {
-                html2canvas(tableElement, {
-                    backgroundColor: '#ffffff',
-                    scale: 2,
-                    useCORS: true,
-                    logging: false
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `${filename}_${new Date().toISOString().slice(0, 10)}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                });
-            };
-            document.head.appendChild(script);
-        };
 
         // ============ 醫師規劃面板 ============
-        const PlannerTab = ({ schedule, result, config, onDownload }) => {
+        const PlannerTab = ({ schedule, result, config }) => {
+            // 建構甘特圖資料
             const ganttData = useMemo(() => {
-                if (!schedule.length) return { tasks: [], minTime: 0, maxTime: 0 };
+                let start = Infinity;
+                let end = -Infinity;
+                const rows = [];
 
-                const tasks = [];
-                schedule.forEach((p) => {
-                    tasks.push({ patientId: p.id, type: 'EARLY', start: p.earlyStart, end: p.earlyEnd });
+                if (schedule.length === 0) return { start, end, rows: [], duration: 0 };
+
+                schedule.forEach((p, idx) => {
+                    if (p.earlyStart < start) start = p.earlyStart;
+                    if (p.earlyEnd > end) end = p.earlyEnd;
+
+                    const row = {
+                        id: p.id,
+                        type: p.type || 'FDG',
+                        early: { start: p.earlyStart, end: p.earlyEnd },
+                        delayed: null,
+                    };
+
                     if (p.delayedStart !== null) {
-                        tasks.push({ patientId: p.id, type: 'DELAYED', start: p.delayedStart, end: p.delayedEnd });
+                        row.delayed = { start: p.delayedStart, end: p.delayedEnd };
+                        if (p.delayedEnd > end) end = p.delayedEnd;
                     }
+                    rows.push(row);
                 });
 
-                const allTimes = tasks.flatMap(t => [t.start, t.end]);
-                return { tasks, minTime: Math.min(...allTimes), maxTime: Math.max(...allTimes) };
+                start = Math.max(0, start - 15);
+                end = end + 15;
+
+                return {
+                    start,
+                    end,
+                    duration: end - start,
+                    rows
+                };
             }, [schedule]);
 
-            const getBarColor = (type) => {
-                return type === 'EARLY'
-                    ? 'background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)'
-                    : 'background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%)';
-            };
-
-            const getBarPosition = (start, end, minTime, maxTime) => {
-                const totalDuration = maxTime - minTime || 1;
-                const left = ((start - minTime) / totalDuration) * 100;
-                const width = ((end - start) / totalDuration) * 100;
-                return { left: `${left}%`, width: `${Math.max(width, 1)}%` };
-            };
-
-            const timeMarkers = useMemo(() => {
-                if (!schedule.length) return [];
-                const { minTime, maxTime } = ganttData;
-                const markers = [];
-                const start = Math.floor(minTime / 30) * 30;
-                for (let t = start; t <= maxTime; t += 30) {
-                    const pos = ((t - minTime) / (maxTime - minTime || 1)) * 100;
-                    markers.push({ time: t, pos });
-                }
-                return markers;
-            }, [ganttData, schedule.length]);
-
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {/* 打藥時刻表 */}
-                    <div id="injection-schedule-table" className="card printable-section" style={{ overflow: 'hidden' }}>
-                        <div style={{
-                            padding: '20px 24px',
-                            borderBottom: '1px solid #f3e8ff',
-                            background: 'linear-gradient(135deg, var(--lavender-50) 0%, var(--pink-50) 100%)',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            flexWrap: 'wrap',
-                            gap: '12px'
-                        }}>
-                            <div>
-                                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <i className="fa-solid fa-syringe" style={{ fontSize: '18px', color: '#e11d48' }}></i>
-                                    建議打藥時刻表
-                                </h3>
-                                <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
-                                    將此表交給護理師，照表打藥即可
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => onDownload && onDownload()}
-                                className="btn-soft no-print"
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '8px 14px',
-                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '10px',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    boxShadow: '0 2px 6px rgba(37, 99, 235, 0.3)'
-                                }}
-                            >
-                                <i className="fa-solid fa-download"></i>
-                                下載圖片
-                            </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }} className="fade-in">
+
+                    {/* 注射時刻表 (表格) */}
+                    <div id="injection-schedule-table" className="card printable-section" style={{ overflow: 'hidden', border: 'none', boxShadow: 'none' }}>
+                        <div style={{ padding: '24px', borderBottom: '2px solid var(--slate-200)', background: 'var(--bg-card)' }}>
+                            <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <i className="fa-solid fa-syringe" style={{ color: 'var(--navy-600)' }}></i>
+                                注射時刻表
+                            </h3>
+                            <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--slate-500)' }}>
+                                各時段之放射性藥物注射與掃描排程一覽。
+                            </p>
                         </div>
+                        <div style={{ overflowX: 'auto', background: 'var(--bg-card)' }}>
+                            {schedule.length > 0 ? (
+                                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '14px' }}>
+                                    <thead>
+                                        <tr style={{ background: 'var(--bg-table-header)', color: 'var(--slate-600)', borderBottom: '2px solid var(--slate-200)' }}>
+                                            <th style={{ padding: '14px 16px', fontWeight: 600 }}>次序</th>
+                                            <th style={{ padding: '14px 16px', fontWeight: 600 }}>檢查藥物</th>
+                                            <th style={{ padding: '14px 16px', fontWeight: 600 }}>打藥時間</th>
+                                            <th style={{ padding: '14px 16px', fontWeight: 600 }}>Early Scan</th>
+                                            <th style={{ padding: '14px 16px', fontWeight: 600 }}>Delayed Scan</th>
+                                            <th style={{ padding: '14px 16px', fontWeight: 600 }}>等待間隔</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="font-mono">
+                                        {schedule.map((patient, index) => {
+                                            const waitTime = patient.delayedStart ? (patient.delayedStart - patient.injTime) : null;
+                                            const isPosluma = patient.type === 'POSLUMA';
+                                            const highlightWait = waitTime !== null && (waitTime < config.minWaitLimit || waitTime > config.maxWaitLimit);
 
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                                <thead>
-                                    <tr style={{ background: 'var(--warm-gray-50)', color: 'var(--warm-gray-600)' }}>
-                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>序號</th>
-                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            <i className="fa-solid fa-syringe" style={{ color: '#e11d48', marginRight: '6px' }}></i> 打藥時間
-                                        </th>
-                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            <i className="fa-solid fa-bolt" style={{ color: '#3b82f6', marginRight: '6px' }}></i> Early Scan
-                                        </th>
-                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            <i className="fa-regular fa-clock" style={{ color: '#f97316', marginRight: '6px' }}></i> Delayed Scan
-                                        </th>
-                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 600 }}>
-                                            等待時間 <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--warm-gray-400)' }}>(打藥→Delayed開始)</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {schedule.map((p, idx) => {
-                                        const waitTime = p.delayedStart !== null ? p.delayedStart - p.injTime : null;
-                                        const isOverLimit = waitTime !== null && p.type === 'FDG' && waitTime > config.maxWaitLimit;
-                                        const isNewBatch = idx > 0 && schedule[idx - 1].batch !== p.batch && p.batch !== null;
-                                        const isPosluma = p.type === 'POSLUMA';
-
-                                        return (
-                                            <tr
-                                                key={p.id}
-                                                className="table-row"
-                                                style={{
-                                                    borderBottom: '1px solid var(--warm-gray-100)',
-                                                    transition: 'background 0.15s',
-                                                    borderTop: isNewBatch ? '3px solid #93c5fd' : 'none',
-                                                    background: isPosluma ? 'linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 100%)' : 'transparent'
-                                                }}
-                                            >
-                                                <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--warm-gray-800)' }}>
-                                                    <span style={{
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px'
-                                                    }}>
-                                                        {isPosluma ? (
-                                                            <span style={{
-                                                                background: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
-                                                                padding: '2px 8px',
-                                                                borderRadius: '6px',
-                                                                fontSize: '10px',
-                                                                fontWeight: 700,
-                                                                color: 'white'
-                                                            }}>Posluma</span>
-                                                        ) : (
-                                                            <span style={{
-                                                                background: 'linear-gradient(135deg, #fca5a5 0%, #f87171 100%)',
-                                                                padding: '2px 8px',
-                                                                borderRadius: '6px',
-                                                                fontSize: '10px',
-                                                                fontWeight: 700,
-                                                                color: 'white'
-                                                            }}>FDG</span>
-                                                        )}
-                                                        {p.id}
-                                                    </span>
-                                                    {!isPosluma && result.batches && result.batches.length > 1 && (
+                                            return (
+                                                <tr key={index} className="table-row" style={{ borderBottom: '1px solid var(--slate-100)' }}>
+                                                    <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--slate-700)' }}>
+                                                        {patient.id}
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px' }}>
                                                         <span style={{
-                                                            marginLeft: '8px',
-                                                            fontSize: '11px',
-                                                            background: `hsl(${210 + (p.batch - 1) * 30}, 80%, 85%)`,
-                                                            color: `hsl(${210 + (p.batch - 1) * 30}, 60%, 35%)`,
-                                                            padding: '2px 8px',
-                                                            borderRadius: '10px'
-                                                        }}>
-                                                            第 {p.batch} 批
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td style={{ padding: '14px 16px', color: isPosluma ? '#059669' : '#e11d48', fontWeight: 700 }}>
-                                                    {minutesToTime(p.injTime)}
-                                                </td>
-                                                <td style={{ padding: '14px 16px', color: isPosluma ? '#047857' : '#2563eb', fontWeight: 500 }}>
-                                                    {minutesToTime(p.earlyStart)}-{minutesToTime(p.earlyEnd)}
-                                                </td>
-                                                <td style={{ padding: '14px 16px', color: '#ea580c', fontWeight: 500 }}>
-                                                    {p.delayedStart ? `${minutesToTime(p.delayedStart)}-${minutesToTime(p.delayedEnd)}` : '-'}
-                                                </td>
-                                                <td style={{ padding: '14px 16px' }}>
-                                                    {waitTime !== null ? (
-                                                        <span style={{
-                                                            color: isOverLimit ? '#dc2626' : '#16a34a',
+                                                            background: isPosluma ? 'var(--teal-100)' : 'var(--slate-100)',
+                                                            color: isPosluma ? 'var(--teal-700)' : 'var(--slate-600)',
+                                                            padding: '4px 8px',
+                                                            borderRadius: '6px',
+                                                            fontSize: '12px',
                                                             fontWeight: 600
-                                                        }}>
-                                                            {Math.floor(waitTime / 60)}h {waitTime % 60}m
-                                                            {isOverLimit && ' ⚠️'}
-                                                        </span>
-                                                    ) : (
-                                                        <span style={{ color: 'var(--warm-gray-400)' }}>-</span>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                                                        }}>{patient.type || 'FDG'}</span>
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', color: 'var(--slate-800)', fontWeight: 600 }}>{minutesToTime(patient.injTime)}</td>
+                                                    <td style={{ padding: '12px 16px', color: 'var(--navy-600)', fontWeight: 600 }}>
+                                                        {minutesToTime(patient.earlyStart)} - {minutesToTime(patient.earlyEnd)}
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px', color: patient.delayedStart ? 'var(--orange-600)' : 'var(--slate-400)', fontWeight: patient.delayedStart ? 600 : 400 }}>
+                                                        {patient.delayedStart ? `${minutesToTime(patient.delayedStart)} - ${minutesToTime(patient.delayedEnd)}` : '-'}
+                                                    </td>
+                                                    <td style={{ padding: '12px 16px' }}>
+                                                        {waitTime !== null ? (
+                                                            <span style={{
+                                                                color: highlightWait ? '#dc2626' : 'var(--slate-600)',
+                                                                fontWeight: highlightWait ? 700 : 'normal',
+                                                                background: highlightWait ? '#fee2e2' : 'transparent',
+                                                                padding: highlightWait ? '2px 6px' : '0',
+                                                                borderRadius: '4px'
+                                                            }}>
+                                                                {waitTime} min
+                                                            </span>
+                                                        ) : '-'}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div style={{ padding: '48px', textAlign: 'center', color: 'var(--slate-400)' }}>
+                                    <i className="fa-regular fa-folder-open" style={{ fontSize: '40px', marginBottom: '12px', display: 'block' }}></i>
+                                    <p>請在左側輸入參數並調整病人數</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* 甘特圖 - 格子狀時間軸 */}
+                    {/* 視覺化甘特圖 (Gantt Chart) */}
                     {schedule.length > 0 && (() => {
-                        // 計算時間範圍，對齊到30分鐘
-                        const allTimes = schedule.flatMap(p => [p.earlyStart, p.earlyEnd, p.delayedStart, p.delayedEnd].filter(t => t !== null));
-                        const rawMin = Math.min(...allTimes);
-                        const rawMax = Math.max(...allTimes);
-                        const gridStart = Math.floor(rawMin / 30) * 30;
-                        const gridEnd = Math.ceil(rawMax / 30) * 30;
-                        const totalCells = (gridEnd - gridStart) / 5; // 每5分鐘一格
-                        const cellWidth = 12; // 每格寬度(px) - 縮小以減少滾動
-
-                        // 生成時間標記（每30分鐘）
-                        const hourMarkers = [];
-                        for (let t = gridStart; t <= gridEnd; t += 30) {
-                            hourMarkers.push(t);
+                        const { start, duration, rows } = ganttData;
+                        const tickInterval = 60; // 1 小時一個刻度
+                        const firstTick = Math.ceil(start / tickInterval) * tickInterval;
+                        const ticks = [];
+                        for (let t = firstTick; t <= ganttData.end; t += tickInterval) {
+                            ticks.push(t);
                         }
 
-                        // 判斷任務佔用哪些格子
-                        const getCellRange = (start, end) => {
-                            const startCell = Math.floor((start - gridStart) / 5);
-                            const endCell = Math.ceil((end - gridStart) / 5);
-                            return { startCell, endCell, span: endCell - startCell };
-                        };
+                        // 將時間轉為百分比的共用函數
+                        const getPosition = (t) => ((t - start) / duration) * 100;
 
                         return (
                             <React.Fragment>
-                                {/* 手機版摘要 - 只在小螢幕顯示 */}
-                                <div className="card mobile-schedule-summary" style={{ overflow: 'hidden', marginBottom: '16px' }}>
-                                    <div style={{
-                                        padding: '16px 20px',
-                                        background: 'linear-gradient(135deg, var(--mint-50) 0%, #ecfeff 100%)'
-                                    }}>
-                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{ fontSize: '18px' }}>📊</span>
-                                            當日機器佔用摘要
-                                        </h3>
-                                    </div>
-                                    <div style={{ padding: '16px 20px' }}>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                                            <div style={{
-                                                padding: '12px',
-                                                background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                                borderRadius: '10px',
-                                                textAlign: 'center'
-                                            }}>
-                                                <div style={{ fontSize: '11px', color: '#1e40af', marginBottom: '4px' }}>開始時間</div>
-                                                <div style={{ fontSize: '18px', fontWeight: 700, color: '#1d4ed8' }}>
-                                                    {minutesToTime(Math.min(...schedule.map(p => p.earlyStart)))}
-                                                </div>
-                                            </div>
-                                            <div style={{
-                                                padding: '12px',
-                                                background: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)',
-                                                borderRadius: '10px',
-                                                textAlign: 'center'
-                                            }}>
-                                                <div style={{ fontSize: '11px', color: '#c2410c', marginBottom: '4px' }}>結束時間</div>
-                                                <div style={{ fontSize: '18px', fontWeight: 700, color: '#ea580c' }}>
-                                                    {minutesToTime(Math.max(...schedule.flatMap(p => [p.earlyEnd, p.delayedEnd].filter(t => t !== null))))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div style={{
-                                            marginTop: '12px',
-                                            padding: '10px 12px',
-                                            background: 'var(--warm-gray-50)',
-                                            borderRadius: '8px',
-                                            fontSize: '12px',
-                                            color: 'var(--warm-gray-600)'
-                                        }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                                <span>總檢查數</span>
-                                                <span style={{ fontWeight: 600 }}>{schedule.length} 位病人</span>
-                                            </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                                <span>FDG</span>
-                                                <span style={{ fontWeight: 600, color: '#2563eb' }}>{schedule.filter(p => p.type === 'FDG').length} 位</span>
-                                            </div>
-                                            {schedule.filter(p => p.type === 'Posluma').length > 0 && (
-                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                    <span>Posluma</span>
-                                                    <span style={{ fontWeight: 600, color: '#059669' }}>{schedule.filter(p => p.type === 'Posluma').length} 位</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
+                                <div className="no-print card" style={{ padding: '24px', overflowX: 'auto' }}>
+                                    <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: 700, color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <i className="fa-solid fa-chart-gantt" style={{ color: 'var(--slate-400)' }}></i>
+                                        機台排程分佈圖
+                                    </h3>
+                                    <div style={{ minWidth: '600px', position: 'relative' }}>
 
-                                {/* 桌面版甘特圖 */}
-                                <div className="card gantt-chart-section" style={{ overflow: 'hidden' }}>
-                                    <div style={{
-                                        padding: '20px 24px',
-                                        borderBottom: '1px solid #dbeafe',
-                                        background: 'linear-gradient(135deg, var(--mint-50) 0%, #ecfeff 100%)'
-                                    }}>
-                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <span style={{ fontSize: '20px' }}>📊</span>
-                                            機器使用時間軸
-                                            <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--warm-gray-500)', marginLeft: '8px' }}>
-                                                （每小格 5 分鐘）
-                                            </span>
-                                        </h3>
-                                    </div>
-
-                                    <div style={{ padding: '24px', overflowX: 'auto' }}>
-                                        {/* 圖例 */}
-                                        <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', fontSize: '13px', flexWrap: 'wrap' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)' }}></div>
-                                                <span style={{ color: 'var(--warm-gray-600)' }}>FDG Early</span>
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'linear-gradient(135deg, #fdba74 0%, #fb923c 100%)' }}></div>
-                                                <span style={{ color: 'var(--warm-gray-600)' }}>FDG Delayed</span>
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'linear-gradient(135deg, #6ee7b7 0%, #34d399 100%)' }}></div>
-                                                <span style={{ color: 'var(--warm-gray-600)' }}>Posluma</span>
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: 'var(--warm-gray-100)', border: '1px solid var(--warm-gray-200)' }}></div>
-                                                <span style={{ color: 'var(--warm-gray-600)' }}>空閒</span>
-                                            </div>
+                                        {/* 時間軸刻度 (Header) */}
+                                        <div style={{ height: '30px', position: 'relative', borderBottom: '1px solid var(--slate-200)', marginBottom: '16px' }}>
+                                            {ticks.map((t, i) => (
+                                                <div key={i} style={{
+                                                    position: 'absolute',
+                                                    left: `${getPosition(t)}%`,
+                                                    transform: 'translateX(-50%)',
+                                                    fontSize: '11px',
+                                                    color: 'var(--slate-500)',
+                                                    fontWeight: 600
+                                                }} className="font-mono">
+                                                    {minutesToTime(t)}
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        left: '50%',
+                                                        top: '16px',
+                                                        height: '14px',
+                                                        width: '1px',
+                                                        background: 'var(--slate-300)'
+                                                    }}></div>
+                                                </div>
+                                            ))}
                                         </div>
 
-                                        <div style={{ display: 'inline-block', minWidth: 'fit-content' }}>
-                                            {/* 時間軸標頭 */}
-                                            <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '4px', paddingLeft: '70px' }}>
-                                                {hourMarkers.map((t, idx) => (
-                                                    <div key={idx} style={{
-                                                        width: `${cellWidth * 6}px`,
-                                                        textAlign: 'left',
-                                                        fontSize: '11px',
-                                                        fontWeight: 600,
-                                                        color: 'var(--warm-gray-600)'
+                                        {/* 甘特圖本體 */}
+                                        <div style={{ position: 'relative', paddingBottom: '10px' }}>
+                                            {/* 畫背景垂直網格線 */}
+                                            {ticks.map((t, i) => (
+                                                <div key={i} style={{
+                                                    position: 'absolute',
+                                                    left: `${getPosition(t)}%`,
+                                                    top: 0,
+                                                    bottom: 0,
+                                                    width: '1px',
+                                                    background: 'var(--slate-100)',
+                                                    zIndex: 0
+                                                }}></div>
+                                            ))}
+
+                                            {/* 畫每一筆病人的狀態區塊 */}
+                                            {rows.map((row, i) => {
+                                                const isP = row.type === 'POSLUMA';
+                                                // colors
+                                                const earlyBg = isP ? 'linear-gradient(90deg, #14b8a6, #0d9488)' : 'linear-gradient(90deg, #0ea5e9, #0284c7)';
+                                                const delayedBg = 'linear-gradient(90deg, #f97316, #ea580c)';
+
+                                                return (
+                                                    <div key={i} style={{
+                                                        height: '40px',
+                                                        marginBottom: '8px',
+                                                        position: 'relative',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        zIndex: 1,
+                                                        background: 'var(--bg-table-header)',
+                                                        borderRadius: '6px'
                                                     }}>
-                                                        {minutesToTime(t)}
-                                                    </div>
-                                                ))}
-                                            </div>
 
-                                            {/* 格子表格 */}
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                {schedule.map((patient) => {
-                                                    const earlyRange = getCellRange(patient.earlyStart, patient.earlyEnd);
-                                                    const delayedRange = patient.delayedStart ? getCellRange(patient.delayedStart, patient.delayedEnd) : null;
-                                                    const isPosluma = patient.type === 'POSLUMA';
-
-                                                    return (
-                                                        <div key={patient.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                            <div style={{
-                                                                width: '60px',
-                                                                fontSize: '12px',
-                                                                color: isPosluma ? '#059669' : 'var(--warm-gray-600)',
-                                                                fontWeight: 600,
-                                                                textAlign: 'right',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-end',
-                                                                gap: '4px'
-                                                            }}>
-                                                                {isPosluma && <span style={{ fontSize: '9px', background: '#10b981', color: 'white', padding: '1px 4px', borderRadius: '3px' }}>P</span>}
-                                                                {patient.id}
-                                                            </div>
-                                                            <div style={{ display: 'flex' }}>
-                                                                {Array.from({ length: totalCells }, (_, cellIdx) => {
-                                                                    const isEarly = cellIdx >= earlyRange.startCell && cellIdx < earlyRange.endCell;
-                                                                    const isDelayed = delayedRange && cellIdx >= delayedRange.startCell && cellIdx < delayedRange.endCell;
-                                                                    const is30MinBorder = (cellIdx + 1) % 6 === 0;
-
-                                                                    let bg = 'var(--warm-gray-50)';
-                                                                    let title = '';
-                                                                    if (isEarly) {
-                                                                        bg = isPosluma
-                                                                            ? 'linear-gradient(135deg, #6ee7b7 0%, #34d399 100%)'
-                                                                            : 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%)';
-                                                                        title = `${isPosluma ? 'Posluma' : 'FDG'} Early: ${minutesToTime(patient.earlyStart)} - ${minutesToTime(patient.earlyEnd)}`;
-                                                                    } else if (isDelayed) {
-                                                                        bg = isPosluma
-                                                                            ? 'linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%)'
-                                                                            : 'linear-gradient(135deg, #fdba74 0%, #fb923c 100%)';
-                                                                        title = `${isPosluma ? 'Posluma' : 'FDG'} Delayed: ${minutesToTime(patient.delayedStart)} - ${minutesToTime(patient.delayedEnd)}`;
-                                                                    }
-
-                                                                    return (
-                                                                        <div
-                                                                            key={cellIdx}
-                                                                            title={title}
-                                                                            style={{
-                                                                                width: `${cellWidth}px`,
-                                                                                height: '24px',
-                                                                                background: bg,
-                                                                                borderRight: is30MinBorder ? '2px solid var(--warm-gray-300)' : '1px solid var(--warm-gray-200)',
-                                                                                borderTop: '1px solid var(--warm-gray-200)',
-                                                                                borderBottom: '1px solid var(--warm-gray-200)',
-                                                                                borderLeft: cellIdx === 0 ? '2px solid var(--warm-gray-300)' : 'none',
-                                                                                transition: 'transform 0.15s',
-                                                                                cursor: (isEarly || isDelayed) ? 'pointer' : 'default',
-                                                                            }}
-                                                                            onMouseOver={(e) => {
-                                                                                if (isEarly || isDelayed) e.target.style.transform = 'scaleY(1.2)';
-                                                                            }}
-                                                                            onMouseOut={(e) => {
-                                                                                e.target.style.transform = 'scaleY(1)';
-                                                                            }}
-                                                                        ></div>
-                                                                    );
-                                                                })}
-                                                            </div>
+                                                        {/* 左側 Label */}
+                                                        <div className="font-mono" style={{
+                                                            position: 'absolute',
+                                                            left: '-60px',
+                                                            width: '50px',
+                                                            textAlign: 'right',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            color: 'var(--slate-600)'
+                                                        }}>
+                                                            {row.id}
                                                         </div>
-                                                    );
-                                                })}
-                                            </div>
+
+                                                        {/* Early Block */}
+                                                        <div style={{
+                                                            position: 'absolute',
+                                                            left: `${getPosition(row.early.start)}%`,
+                                                            width: `${getPosition(row.early.end) - getPosition(row.early.start)}%`,
+                                                            height: '24px',
+                                                            background: earlyBg,
+                                                            borderRadius: '4px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: 'white',
+                                                            fontSize: '10px',
+                                                            fontWeight: 600,
+                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'nowrap'
+                                                        }}>E</div>
+
+                                                        {/* Delayed Block */}
+                                                        {row.delayed && (
+                                                            <React.Fragment>
+                                                                {/* 等待虛線 */}
+                                                                <div style={{
+                                                                    position: 'absolute',
+                                                                    left: `${getPosition(row.early.end)}%`,
+                                                                    width: `${getPosition(row.delayed.start) - getPosition(row.early.end)}%`,
+                                                                    height: '1px',
+                                                                    borderTop: '1px dashed var(--slate-300)',
+                                                                    top: '50%'
+                                                                }}></div>
+                                                                <div style={{
+                                                                    position: 'absolute',
+                                                                    left: `${getPosition(row.delayed.start)}%`,
+                                                                    width: `${getPosition(row.delayed.end) - getPosition(row.delayed.start)}%`,
+                                                                    height: '24px',
+                                                                    background: delayedBg,
+                                                                    borderRadius: '4px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    color: 'white',
+                                                                    fontSize: '10px',
+                                                                    fontWeight: 600,
+                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                                }}>D</div>
+                                                            </React.Fragment>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* 圖例說明 */}
+                                    <div style={{ display: 'flex', gap: '16px', marginTop: '16px', justifyContent: 'center', fontSize: '12px', color: 'var(--slate-500)', fontWeight: 600 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div style={{ width: '12px', height: '12px', background: 'linear-gradient(90deg, #0ea5e9, #0284c7)', borderRadius: '3px' }}></div> FDG Early
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div style={{ width: '12px', height: '12px', background: 'linear-gradient(90deg, #14b8a6, #0d9488)', borderRadius: '3px' }}></div> Posluma
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div style={{ width: '12px', height: '12px', background: 'linear-gradient(90deg, #f97316, #ea580c)', borderRadius: '3px' }}></div> Delayed
                                         </div>
                                     </div>
                                 </div>
@@ -1273,157 +1288,138 @@
                         );
                     })()}
 
-                    {/* 列印簽名欄 */}
-                    <div className="print-only" style={{ background: 'white', padding: '24px', marginTop: '32px', borderTop: '2px solid var(--warm-gray-300)' }}>
+                    {/* 列印醫師簽名欄 */}
+                    <div className="print-only" style={{ background: 'var(--bg-card)', padding: '24px 0', marginTop: '16px', borderTop: '2px dashed var(--slate-300)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>排程醫師簽名：__________________</p>
-                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>列印日期：{new Date().toLocaleDateString('zh-TW')}</p>
+                            <p style={{ fontSize: '15px', color: '#000', fontWeight: 600 }}>核閱醫師簽名：__________________</p>
+                            <p className="font-mono" style={{ fontSize: '15px', color: '#000', fontWeight: 600 }}>日期：{new Date().toLocaleDateString('zh-TW')}</p>
                         </div>
                     </div>
                 </div>
             );
         };
 
+
         // ============ 放射師工作清單 ============
         const WorklistTab = ({ schedule, result }) => {
-            const [completedTasks, setCompletedTasks] = useState({});
             const worklist = useMemo(() => generateWorklist(schedule), [schedule]);
 
-            const toggleComplete = (index) => {
-                setCompletedTasks(prev => ({ ...prev, [index]: !prev[index] }));
-            };
-
-            const completedCount = Object.values(completedTasks).filter(Boolean).length;
-            const progress = worklist.length > 0 ? (completedCount / worklist.length) * 100 : 0;
-
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }} className="fade-in">
                     {/* 工作清單 */}
-                    <div className="card printable-section" style={{ overflow: 'hidden' }}>
+                    <div className="card printable-section" style={{ overflow: 'hidden', border: 'none', boxShadow: 'none' }}>
                         <div style={{
-                            padding: '20px 24px',
-                            borderBottom: '1px solid #dcfce7',
-                            background: 'linear-gradient(135deg, var(--mint-50) 0%, var(--mint-100) 100%)'
+                            padding: '24px',
+                            borderBottom: '2px solid var(--slate-200)',
+                            background: 'var(--bg-card)'
                         }}>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: 'var(--warm-gray-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <i className="fa-solid fa-clipboard-check" style={{ fontSize: '18px', color: '#16a34a' }}></i>
-                                執行清單
+                            <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <i className="fa-solid fa-clipboard-check" style={{ color: 'var(--teal-600)' }}></i>
+                                攝影順序表 (執行清單)
                             </h3>
-                            <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--warm-gray-600)' }}>
-                                依時間排序，照順序執行即可
+                            <p style={{ margin: '6px 0 0 0', fontSize: '14px', color: 'var(--slate-500)' }}>
+                                請依照下方時間軸順序執行攝影。實體列印後可於左側方格打勾確認。
                             </p>
                         </div>
 
-                        <div>
-                            {worklist.map((task, idx) => {
-                                const isDelayed = task.type === 'DELAYED';
-                                const isPosluma = task.patientType === 'POSLUMA';
+                        <div style={{ padding: '32px 24px', background: 'var(--bg-card)' }}>
+                            {worklist.length > 0 ? (
+                                <div className="timeline">
+                                    {worklist.map((task, idx) => {
+                                        const isDelayed = task.type === 'DELAYED';
+                                        const isPosluma = task.patientType === 'POSLUMA';
 
-                                return (
-                                    <div
-                                        key={idx}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '16px',
-                                            padding: '14px 24px',
-                                            borderBottom: '1px solid var(--warm-gray-100)',
-                                            flexWrap: 'wrap',
-                                            background: isPosluma ? 'linear-gradient(90deg, rgba(236, 253, 245, 0.5) 0%, transparent 100%)' : 'transparent'
-                                        }}
-                                    >
-                                        {/* 序號 */}
-                                        <div style={{
-                                            width: '28px',
-                                            height: '28px',
-                                            borderRadius: '50%',
-                                            background: isPosluma ? '#d1fae5' : 'var(--warm-gray-200)',
-                                            color: isPosluma ? '#059669' : 'var(--warm-gray-600)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '13px',
-                                            fontWeight: 600
-                                        }}>
-                                            {idx + 1}
-                                        </div>
+                                        // Color logic
+                                        const dotClass = isDelayed ? 'delayed' : 'early';
+                                        const bgStyle = isDelayed
+                                            ? { background: 'var(--orange-50)', border: '1px solid var(--orange-100)' }
+                                            : { background: 'var(--navy-50)', border: '1px solid var(--navy-100)' };
 
-                                        {/* 時間 */}
-                                        <div style={{ minWidth: '100px' }}>
-                                            <div style={{
-                                                fontSize: '17px',
-                                                fontWeight: 700,
-                                                color: 'var(--warm-gray-800)'
-                                            }}>
-                                                {minutesToTime(task.time)}-{minutesToTime(task.endTime)}
+                                        const tagColor = isDelayed ? 'var(--orange-600)' : 'var(--navy-600)';
+                                        const tagBg = isDelayed ? 'var(--orange-100)' : 'var(--navy-100)';
+                                        const iconClass = isDelayed ? 'fa-regular fa-clock' : 'fa-solid fa-bolt';
+                                        const typeLabel = isDelayed ? 'Delayed' : 'Early';
+
+                                        const drugColor = isPosluma ? 'var(--teal-700)' : 'var(--slate-600)';
+                                        const drugBg = isPosluma ? 'var(--teal-100)' : 'var(--slate-100)';
+
+                                        return (
+                                            <div key={idx} className="timeline-item">
+                                                <div className={`timeline-dot ${dotClass}`}></div>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                                                    {/* 實體打勾方塊 */}
+                                                    <div className="custom-checkbox"></div>
+
+                                                    {/* 時間區塊 */}
+                                                    <div style={{ minWidth: '110px', paddingTop: '1px' }}>
+                                                        <div className="font-mono print-bold" style={{
+                                                            fontSize: '18px',
+                                                            fontWeight: 700,
+                                                            color: 'var(--slate-800)',
+                                                            lineHeight: '1.2'
+                                                        }}>
+                                                            {minutesToTime(task.time)}
+                                                        </div>
+                                                        <div className="font-mono" style={{ fontSize: '13px', color: 'var(--slate-500)', marginTop: '2px' }}>
+                                                            ~ {minutesToTime(task.endTime)}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 任務卡片 */}
+                                                    <div style={{
+                                                        flex: 1,
+                                                        padding: '12px 16px',
+                                                        borderRadius: '8px',
+                                                        ...bgStyle,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        flexWrap: 'wrap',
+                                                        gap: '12px'
+                                                    }} className="print-border-solid">
+
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '8px',
+                                                            minWidth: '100px'
+                                                        }}>
+                                                            <span style={{
+                                                                background: drugBg,
+                                                                color: drugColor,
+                                                                padding: '2px 6px',
+                                                                borderRadius: '4px',
+                                                                fontSize: '11px',
+                                                                fontWeight: 700
+                                                            }}>{isPosluma ? 'Posluma' : 'FDG'}</span>
+                                                            <span className="font-mono print-bold" style={{ fontWeight: 700, fontSize: '15px', color: 'var(--slate-700)' }}>
+                                                                {task.patientId}
+                                                            </span>
+                                                        </div>
+
+                                                        <div style={{
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            color: tagColor,
+                                                            fontSize: '13px',
+                                                            fontWeight: 600
+                                                        }}>
+                                                            <i className={iconClass}></i>
+                                                            <span className="print-bold">{typeLabel}</span>
+                                                            {isDelayed && <span className="print-only" style={{ marginLeft: '4px', fontWeight: 800 }}>[⚠ 延遲造影]</span>}
+                                                        </div>
+
+                                                        <div style={{ fontSize: '13px', color: 'var(--slate-500)', marginLeft: 'auto' }}>
+                                                            {task.duration} min
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        {/* 病人編號 + 類型 */}
-                                        <div style={{
-                                            minWidth: '100px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px'
-                                        }}>
-                                            <span style={{
-                                                background: isPosluma
-                                                    ? 'linear-gradient(135deg, #34d399 0%, #10b981 100%)'
-                                                    : 'linear-gradient(135deg, #fca5a5 0%, #f87171 100%)',
-                                                padding: '2px 6px',
-                                                borderRadius: '4px',
-                                                fontSize: '9px',
-                                                fontWeight: 700,
-                                                color: 'white'
-                                            }}>{isPosluma ? 'Posluma' : 'FDG'}</span>
-                                            <span style={{ fontWeight: 600, color: 'var(--warm-gray-700)' }}>{task.patientId}</span>
-                                        </div>
-
-                                        {/* 任務類型 */}
-                                        <div>
-                                            {isDelayed ? (
-                                                <span style={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    gap: '6px',
-                                                    padding: '5px 12px',
-                                                    borderRadius: '16px',
-                                                    background: 'linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)',
-                                                    color: '#c2410c',
-                                                    fontSize: '13px',
-                                                    fontWeight: 600
-                                                }}>
-                                                    <i className="fa-regular fa-clock" style={{ marginRight: '4px' }}></i> Delayed
-                                                </span>
-                                            ) : (
-                                                <span style={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    gap: '6px',
-                                                    padding: '5px 12px',
-                                                    borderRadius: '16px',
-                                                    background: isPosluma
-                                                        ? 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'
-                                                        : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                                    color: isPosluma ? '#047857' : '#1d4ed8',
-                                                    fontSize: '13px',
-                                                    fontWeight: 600
-                                                }}>
-                                                    <i className="fa-solid fa-bolt" style={{ marginRight: '4px' }}></i> Early
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* 工時 */}
-                                        <div style={{ fontSize: '13px', color: 'var(--warm-gray-500)', marginLeft: 'auto' }}>
-                                            {task.duration}min
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                            {worklist.length === 0 && (
-                                <div style={{ padding: '48px', textAlign: 'center', color: 'var(--warm-gray-400)' }}>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div style={{ padding: '48px', textAlign: 'center', color: 'var(--slate-400)' }}>
                                     <i className="fa-regular fa-folder-open" style={{ fontSize: '40px', marginBottom: '12px', display: 'block' }}></i>
                                     <p>尚未產生排程</p>
                                 </div>
@@ -1432,15 +1428,16 @@
                     </div>
 
                     {/* 列印簽名欄 */}
-                    <div className="print-only" style={{ background: 'white', padding: '24px', marginTop: '32px', borderTop: '2px solid var(--warm-gray-300)' }}>
+                    <div className="print-only" style={{ background: 'var(--bg-card)', padding: '24px 0', marginTop: '16px', borderTop: '2px dashed var(--slate-300)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>執行放射師簽名：__________________</p>
-                            <p style={{ fontSize: '14px', color: 'var(--warm-gray-600)' }}>日期：{new Date().toLocaleDateString('zh-TW')}</p>
+                            <p style={{ fontSize: '15px', color: '#000', fontWeight: 600 }}>執行放射師簽名：__________________</p>
+                            <p className="font-mono" style={{ fontSize: '15px', color: '#000', fontWeight: 600 }}>日期：{new Date().toLocaleDateString('zh-TW')}</p>
                         </div>
                     </div>
                 </div>
             );
         };
+
 
         // ============ 主應用程式 ============
         const App = () => {
@@ -1448,76 +1445,332 @@
             const [config, setConfig] = useState(DEFAULT_CONFIG);
             const [activeTab, setActiveTab] = useState('planner');
             const [poslumaExpanded, setPoslumaExpanded] = useState(false);
+            const [darkMode, setDarkMode] = useState(false);
+
+            React.useEffect(() => {
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }, [darkMode]);
 
             const result = useMemo(() => calculateSchedule(patientCount, config), [patientCount, config]);
 
-            const handlePrint = () => window.print();
+            const handlePrint = () => {
+                if (darkMode) {
+                    document.body.classList.remove('dark-mode');
+                    setTimeout(() => {
+                        window.print();
+                        document.body.classList.add('dark-mode');
+                    }, 100);
+                } else {
+                    window.print();
+                }
+            };
 
             const handleConfigChange = (key, value) => {
                 setConfig(prev => ({ ...prev, [key]: value }));
-                // 當 Posluma 數量大於 0 時自動展開
                 if (key === 'poslumaCount' && value > 0) {
                     setPoslumaExpanded(true);
                 }
             };
 
             return (
-                <div style={{ minHeight: '100vh' }}>
+                <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
                     {/* 頂部導航 */}
                     <header className="no-print" style={{
-                        background: 'linear-gradient(135deg, #fce7f3 0%, #e9d5ff 50%, #dbeafe 100%)',
-                        borderBottom: '1px solid rgba(0,0,0,0.05)',
-                        padding: '16px 0'
+                        background: 'var(--bg-card)',
+                        borderBottom: '1px solid var(--slate-200)',
+                        padding: '16px 0',
+                        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
                     }}>
-                        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                 <div style={{
-                                    width: '44px',
-                                    height: '44px',
-                                    background: 'white',
-                                    borderRadius: '14px',
+                                    width: '48px',
+                                    height: '48px',
+                                    background: 'var(--teal-50)',
+                                    color: 'var(--teal-600)',
+                                    borderRadius: '12px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                                    fontSize: '22px'
+                                    fontSize: '24px',
+                                    border: '1px solid var(--teal-100)'
                                 }}>
-                                    🩺
+                                    <svg width="28" height="28" viewBox="0 0 100 100" style={{ overflow: 'visible', filter: 'drop-shadow(0 0 2px currentColor)' }}>
+                                        <circle cx="50" cy="50" r="8" fill="currentColor">
+                                            <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite" />
+                                            <animate attributeName="r" values="7;10;7" dur="2s" repeatCount="indefinite" />
+                                        </circle>
+                                        <g stroke="currentColor" strokeWidth="3" fill="none">
+                                            <ellipse cx="50" cy="50" rx="32" ry="10" strokeDasharray="140 30" strokeLinecap="round">
+                                                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="6s" repeatCount="indefinite" />
+                                            </ellipse>
+                                            <ellipse cx="50" cy="50" rx="32" ry="10" strokeDasharray="140 30" strokeLinecap="round">
+                                                <animateTransform attributeName="transform" type="rotate" from="120 50 50" to="480 50 50" dur="6s" repeatCount="indefinite" />
+                                            </ellipse>
+                                            <ellipse cx="50" cy="50" rx="32" ry="10" strokeDasharray="140 30" strokeLinecap="round">
+                                                <animateTransform attributeName="transform" type="rotate" from="240 50 50" to="600 50 50" dur="6s" repeatCount="indefinite" />
+                                            </ellipse>
+                                        </g>
+                                    </svg>
                                 </div>
                                 <div>
-                                    <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: 'var(--warm-gray-800)' }}>
+                                    <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--slate-800)', letterSpacing: '-0.02em' }}>
                                         PET 智慧排程助手
                                     </h1>
-                                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--warm-gray-600)' }}>Smart PET Scheduler</p>
-                                    <p style={{ margin: 0, fontSize: '10px', color: 'var(--warm-gray-400)' }}>Created by Huang Chun-Yin</p>
+                                    <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: 'var(--slate-500)', fontFamily: "'Roboto Mono', monospace" }}>Created by Huang Chun-Yin 2026</p>
                                 </div>
                             </div>
 
-                            <button onClick={handlePrint} className="btn-soft" style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '10px 18px',
-                                background: 'white',
-                                border: 'none',
-                                borderRadius: '12px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                color: 'var(--warm-gray-700)',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-                            }}>
-                                🖨️ 列印
-                            </button>
+                            {/* SVG Story 動畫：無盡的掃描人生 */}
+                            <div className="no-print svg-story-container" style={{ flex: 1, display: 'flex', alignItems: 'center', overflow: 'hidden', position: 'relative', height: '64px', margin: '0 24px', opacity: 0.95 }}>
+                                {/* 背景連貫地板 */}
+                                <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                    <line x1="0" y1="60" x2="100%" y2="60" stroke="var(--slate-300)" strokeWidth="1" strokeDasharray="4 2" />
+                                </svg>
+
+                                <svg width="100%" height="100%" viewBox="0 0 450 64" preserveAspectRatio="xMidYMid meet" style={{ color: 'var(--slate-500)', position: 'relative' }}>
+                                    {/* 牆上時鐘 */}
+                                    <g stroke="currentColor" strokeWidth="1">
+                                        <circle cx="110" cy="18" r="6" fill="var(--bg-card)" stroke="var(--slate-300)" />
+                                        <line x1="110" y1="18" x2="110" y2="14" />
+                                        <line x1="110" y1="18" x2="113" y2="20">
+                                            <animateTransform attributeName="transform" type="rotate" values="0 110 18; 360 110 18" dur="10s" repeatCount="indefinite" />
+                                        </line>
+                                    </g>
+
+                                    {/* 海報/窗戶 */}
+                                    <g opacity="0.4">
+                                        <rect x="150" y="10" width="30" height="20" rx="2" fill="var(--slate-100)" stroke="var(--slate-300)" strokeWidth="1" />
+                                        <path d="M 155 16 L 175 16 M 155 20 L 170 20 M 155 24 L 165 24" stroke="var(--slate-400)" strokeWidth="1.5" strokeLinecap="round" />
+                                    </g>
+
+                                    {/* 1. 放射師控制站 (左方) */}
+                                    <g fill="none">
+                                        {/* 桌子 (立體) */}
+                                        <path d="M 10 42 L 65 42 L 70 60 L 15 60 Z" fill="var(--slate-200)" />
+                                        <path d="M 5 38 L 70 38 L 65 42 L 10 42 Z" fill="var(--slate-300)" />
+
+                                        {/* 雙螢幕顯示器 */}
+                                        <rect x="25" y="18" width="16" height="12" rx="1" fill="var(--slate-800)" stroke="var(--slate-600)" strokeWidth="1" />
+                                        <rect x="27" y="20" width="12" height="8" fill="var(--navy-800)" />
+                                        <rect x="31" y="30" width="4" height="8" fill="var(--slate-400)" />
+                                        <line x1="28" y1="38" x2="38" y2="38" stroke="var(--slate-500)" strokeWidth="2" />
+
+                                        <rect x="44" y="20" width="14" height="10" rx="1" fill="var(--slate-800)" stroke="var(--slate-600)" strokeWidth="1" />
+                                        <rect x="46" y="22" width="10" height="6" fill="var(--teal-900)" />
+                                        <rect x="49" y="30" width="4" height="8" fill="var(--slate-400)" />
+                                        <line x1="47" y1="38" x2="55" y2="38" stroke="var(--slate-500)" strokeWidth="2" />
+
+                                        {/* 鍵盤與滑鼠 */}
+                                        <path d="M 35 41 L 45 41" stroke="var(--slate-600)" strokeWidth="1.5" />
+                                        <rect x="52" y="40" width="3" height="2" rx="1" fill="var(--slate-500)" />
+
+                                        {/* 電腦主機 */}
+                                        <rect x="18" y="45" width="12" height="15" fill="var(--slate-800)" />
+                                        <circle cx="24" cy="48" r="1.5" fill="var(--teal-400)" />
+
+                                        {/* 放射師角色 (坐在偏左方) */}
+                                        {/* 身體軀幹 (刷手服) */}
+                                        <path d="M 5 25 C -2 25, -2 40, 5 45 L 20 45 C 27 40, 27 25, 20 25 Z" fill="var(--teal-700)" />
+                                        {/* 褲子腳 */}
+                                        <rect x="5" y="45" width="6" height="15" fill="var(--teal-800)" />
+                                        <rect x="14" y="45" width="6" height="15" fill="var(--teal-800)" />
+
+                                        {/* 頭部 */}
+                                        <circle cx="12" cy="16" r="5" fill="#fcd5ce" />
+                                        {/* 頭髮 */}
+                                        <path d="M 6 15 C 6 8, 18 8, 18 15 C 18 10, 6 10, 6 15 Z" fill="var(--slate-800)" />
+                                        <circle cx="15" cy="15" r="0.8" fill="var(--slate-800)" /> {/* 眼睛 */}
+
+                                        {/* 打字的手臂 */}
+                                        <path d="M 12 28 L 18 35 L 35 39" stroke="#fcd5ce" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <animate attributeName="d" values="M 12 28 L 18 35 L 35 39; M 12 28 L 19 33 L 36 38; M 12 28 L 18 35 L 35 39" dur="1s" repeatCount="indefinite" />
+                                        </path>
+
+                                        {/* 喝咖啡的手臂 */}
+                                        <g>
+                                            <path d="M 8 28 L 2 35 L 5 40" stroke="#fcd5ce" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <animate attributeName="d" values="M 8 28 L 2 35 L 5 40; M 8 28 L -2 25 L 8 18; M 8 28 L 2 35 L 5 40" dur="8s" repeatCount="indefinite" begin="2s" />
+                                            </path>
+                                            {/* 咖啡杯 */}
+                                            <g>
+                                                <animateTransform attributeName="transform" type="translate" values="0 0; 2 -22; 0 0" dur="8s" repeatCount="indefinite" begin="2s" />
+                                                <rect x="3" y="38" width="5" height="6" rx="1" fill="var(--slate-100)" />
+                                                <path d="M 8 40 Q 10 41 8 42" stroke="var(--slate-100)" strokeWidth="1" fill="none" />
+                                                {/* 蒸氣 */}
+                                                <path d="M 4 36 Q 6 32 4 28 M 6 36 Q 4 32 6 28" stroke="var(--slate-300)" strokeWidth="0.8" opacity="0.6" strokeLinecap="round">
+                                                    <animate attributeName="opacity" values="0.6; 0; 0.6" dur="3s" repeatCount="indefinite" />
+                                                </path>
+                                            </g>
+                                        </g>
+                                    </g>
+
+                                    {/* 2. PET 掃描儀 (右方) */}
+                                    {/* 後方機殼 */}
+                                    <g transform="translate(260, 0)">
+                                        <rect x="0" y="8" width="90" height="52" rx="15" fill="var(--slate-300)" />
+                                        <rect x="5" y="13" width="80" height="47" rx="12" fill="var(--slate-200)" />
+                                        {/* 後方掃描隧洞 (深色) */}
+                                        <ellipse cx="45" cy="38" rx="20" ry="20" fill="var(--slate-800)" />
+
+                                        {/* 機殼細節線條 */}
+                                        <line x1="10" y1="52" x2="80" y2="52" stroke="var(--slate-300)" strokeWidth="2" />
+                                    </g>
+
+                                    {/* 3. 病患與移動床 (穿過儀器) */}
+                                    {/* 固定床座 */}
+                                    <path d="M 120 60 L 120 40 Q 120 38 122 38 L 160 38 L 160 60 Z" fill="var(--slate-400)" />
+                                    <rect x="118" y="38" width="44" height="4" rx="1" fill="var(--slate-500)" />
+                                    {/* 支撐軸 (升降感) */}
+                                    <rect x="135" y="42" width="10" height="18" fill="var(--slate-300)" />
+                                    <line x1="125" y1="48" x2="155" y2="48" stroke="var(--slate-500)" strokeWidth="1" />
+
+                                    {/* 移動的托板與平躺病患 (從 115 水平滑動進儀器 260) */}
+                                    <g>
+                                        <animateTransform attributeName="transform" type="translate"
+                                            values="115 0; 115 0; 260 0; 260 0; 115 0; 115 0"
+                                            keyTimes="0; 0.28; 0.45; 0.65; 0.82; 1"
+                                            dur="16s" repeatCount="indefinite" />
+
+                                        {/* 床板 */}
+                                        <rect x="-45" y="35" width="90" height="3" rx="1" fill="var(--slate-300)" />
+                                        <path d="M -43 35 Q -45 32 -33 32 L -10 32 L -5 35 Z" fill="var(--slate-200)" /> {/* 靠枕 */}
+
+                                        {/* 平躺著的病患 (與床同步移動，只有在 0.25 到 0.85 之間顯示) */}
+                                        <g>
+                                            <animate attributeName="opacity" values="0; 0; 1; 1; 1; 1; 0; 0" keyTimes="0; 0.24; 0.27; 0.45; 0.65; 0.83; 0.86; 1" dur="16s" repeatCount="indefinite" />
+                                            {/* 頭 (粉嫩膚色) */}
+                                            <circle cx="-33" cy="29" r="4.5" fill="#fcd5ce" />
+                                            <path d="M -36 26 C -36 23, -27 23, -27 26 C -27 25, -36 25, -36 26 Z" fill="var(--slate-700)" /> {/* 頭髮 */}
+
+                                            {/* 身體 (檢查服) */}
+                                            <path d="M -27 34 L 30 34 L 30 26 C 20 25, -5 23, -27 30 Z" fill="var(--teal-100)" stroke="var(--teal-200)" strokeWidth="0.5" />
+
+                                            {/* 腳 */}
+                                            <path d="M 28 34 Q 35 34 38 28 Q 35 25 30 32 Z" fill="#fcd5ce" />
+
+                                            {/* 穩定的手臂 */}
+                                            <path d="M -15 32 L 0 32 L 15 32" stroke="#e8c3bc" strokeWidth="2.5" strokeLinecap="round" />
+                                        </g>
+                                    </g>
+
+                                    {/* 4. 走路進出的病患 (僅在床外圍時顯示) */}
+                                    <g>
+                                        {/* 全局移動：左方進場 -> 床邊等候 -> 床邊 -> 往右離場 */}
+                                        <animateTransform attributeName="transform" type="translate"
+                                            values="-30 0; 80 0; 80 0; 100 0; 100 0; 100 0; 100 0; 450 0"
+                                            keyTimes="0; 0.18; 0.22; 0.25; 0.75; 0.83; 0.87; 1"
+                                            dur="16s" repeatCount="indefinite" />
+
+                                        {/* Opacity: 當病患平躺時，站立的病患消失 */}
+                                        <animate attributeName="opacity" values="1; 1; 1; 0; 0; 0; 1; 1" keyTimes="0; 0.22; 0.25; 0.26; 0.75; 0.84; 0.87; 1" dur="16s" repeatCount="indefinite" />
+
+                                        {/* 站立身體 */}
+                                        <path d="M 12 20 C 18 20, 24 20, 24 35 L 26 48 L 10 48 C 10 48, 6 35, 12 20 Z" fill="var(--teal-100)" stroke="var(--teal-200)" strokeWidth="0.5" />
+
+                                        {/* 頭部 */}
+                                        <circle cx="18" cy="15" r="4.5" fill="#fcd5ce" />
+                                        <path d="M 14 12 C 14 7, 22 7, 22 12 C 22 10, 14 10, 14 12 Z" fill="var(--slate-700)" /> {/* 簡單髮型 */}
+
+                                        {/* 動態雙腿 (走路動畫) */}
+                                        <g strokeLinecap="round" strokeWidth="3">
+                                            {/* 後腳 */}
+                                            <path fill="none" stroke="#e8c3bc">
+                                                <animate attributeName="d" values="M 20 48 L 16 60; M 20 48 L 22 55 L 18 60; M 20 48 L 16 60" dur="1.2s" repeatCount="indefinite" />
+                                            </path>
+                                            {/* 檢查服裙襬遮擋 */}
+                                            <rect x="6" y="40" width="22" height="8" fill="var(--teal-100)" />
+                                            {/* 前腳 */}
+                                            <path fill="none" stroke="#fcd5ce">
+                                                <animate attributeName="d" values="M 14 48 L 20 60; M 14 48 L 12 55 L 16 60; M 14 48 L 20 60" dur="1.2s" repeatCount="indefinite" begin="0.6s" />
+                                            </path>
+                                        </g>
+
+                                        {/* 擺動的手臂 */}
+                                        <path fill="none" stroke="#fcd5ce" strokeWidth="2.5" strokeLinecap="round">
+                                            <animate attributeName="d" values="M 18 25 L 14 40; M 18 25 L 22 40; M 18 25 L 14 40" dur="1.2s" repeatCount="indefinite" />
+                                        </path>
+                                    </g>
+
+                                    {/* 5. 掃描儀前方飾板 (蓋住病患與床) */}
+                                    <g transform="translate(260, 0)">
+                                        {/* 儀器主體正前方 (帶有科技感圓弧切割) */}
+                                        <path d="M 0 8 Q 45 8 90 8 L 90 60 L 0 60 Z M 45 18 A 20 20 0 1 0 45 58 A 20 20 0 1 0 45 18 Z" fill="var(--teal-600)" fillRule="evenodd" />
+
+                                        {/* 內圈裝飾線 */}
+                                        <circle cx="45" cy="38" r="22" fill="none" stroke="var(--teal-400)" strokeWidth="1" />
+                                        <circle cx="45" cy="38" r="19" fill="none" stroke="var(--teal-800)" strokeWidth="1.5" />
+
+                                        {/* 掃描時的強烈光暈 (Active from 0.45 to 0.65) */}
+                                        <circle cx="45" cy="38" r="19" fill="var(--teal-400)" opacity="0">
+                                            <animate attributeName="opacity" values="0; 0; 0.7; 0.2; 0.9; 0.1; 0; 0" keyTimes="0; 0.44; 0.48; 0.52; 0.58; 0.62; 0.66; 1" dur="16s" repeatCount="indefinite" />
+                                        </circle>
+
+                                        {/* 控制面板燈號 */}
+                                        <rect x="15" y="15" width="16" height="8" rx="1" fill="var(--slate-800)" />
+                                        <rect x="17" y="17" width="12" height="4" fill="var(--orange-500)">
+                                            <animate attributeName="fill" values="var(--orange-500); var(--teal-400); var(--teal-400); var(--orange-500)" keyTimes="0; 0.44; 0.66; 1" dur="16s" repeatCount="indefinite" />
+                                        </rect>
+
+                                        <circle cx="19" cy="27" r="1.5" fill="var(--teal-400)" />
+                                        <circle cx="23" cy="27" r="1.5" fill="var(--slate-500)" />
+                                        <circle cx="27" cy="27" r="1.5" fill="var(--slate-500)" />
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button onClick={() => setDarkMode(!darkMode)} className="btn-soft" style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: 'var(--bg-card)',
+                                    border: '1px solid var(--slate-300)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontSize: '16px',
+                                    color: 'var(--slate-600)',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                }} title="切換深色模式">
+                                    {darkMode ? <i className="fa-solid fa-sun" style={{ color: '#f59e0b' }}></i> : <i className="fa-solid fa-moon"></i>}
+                                </button>
+                                <button onClick={handlePrint} className="btn-soft" style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px 20px',
+                                    background: 'var(--bg-card)',
+                                    border: '1px solid var(--slate-300)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: 600,
+                                    color: 'var(--slate-700)',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                                }}>
+                                    <i className="fa-solid fa-print" style={{ color: 'var(--slate-500)' }}></i> 列印報表
+                                </button>
+                            </div>
                         </div>
                     </header>
 
-                    <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 20px' }}>
-                        {/* 參數輸入區 */}
-                        <div className="no-print card" style={{ marginBottom: '24px', overflow: 'hidden' }}>
-                            <div style={{ padding: '24px' }}>
+                    <main className="app-container" style={{ flex: 1 }}>
+                        {/* 左側：參數輸入區 (Left Pane) */}
+                        <div className="no-print left-pane">
+                            <div className="card" style={{ padding: '24px' }}>
+                                <h2 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: 700, color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <i className="fa-solid fa-sliders" style={{ color: 'var(--slate-400)' }}></i>
+                                    排程參數設定
+                                </h2>
+
                                 {/* 預設按鈕區 */}
-                                <div style={{ marginBottom: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <div style={{ marginBottom: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                                     <button
                                         onClick={() => {
                                             setPatientCount(DR_HUANG_PRESET.patientCount);
@@ -1533,22 +1786,23 @@
                                         }}
                                         className="btn-soft"
                                         style={{
+                                            flex: 1,
                                             display: 'flex',
+                                            justifyContent: 'center',
                                             alignItems: 'center',
                                             gap: '8px',
-                                            padding: '10px 18px',
-                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                            color: 'white',
+                                            padding: '10px',
+                                            background: 'var(--slate-800)',
+                                            color: 'var(--slate-50)',
                                             border: 'none',
-                                            borderRadius: '12px',
+                                            borderRadius: '8px',
                                             fontSize: '13px',
                                             fontWeight: 600,
-                                            cursor: 'pointer',
-                                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+                                            cursor: 'pointer'
                                         }}
                                     >
                                         <i className="fa-solid fa-user-doctor"></i>
-                                        Dr Huang 偏好設定
+                                        Dr. Huang 預設
                                     </button>
                                     <button
                                         onClick={() => {
@@ -1559,34 +1813,35 @@
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
+                                            justifyContent: 'center',
                                             gap: '8px',
-                                            padding: '10px 18px',
-                                            background: 'var(--warm-gray-100)',
-                                            color: 'var(--warm-gray-700)',
-                                            border: '1px solid var(--warm-gray-200)',
-                                            borderRadius: '12px',
+                                            padding: '10px 16px',
+                                            background: 'var(--bg-card)',
+                                            color: 'var(--slate-600)',
+                                            border: '1px solid var(--slate-300)',
+                                            borderRadius: '8px',
                                             fontSize: '13px',
                                             fontWeight: 600,
                                             cursor: 'pointer'
                                         }}
+                                        title="回復系統預設值"
                                     >
                                         <i className="fa-solid fa-rotate-left"></i>
-                                        回復預設
                                     </button>
                                 </div>
 
-                                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: '24px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '20px' }}>
                                     {/* FDG 病人數量 */}
-                                    <div style={{ flex: '1', minWidth: '200px' }}>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            <span style={{ background: 'linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)', padding: '2px 8px', borderRadius: '6px', marginRight: '6px', fontSize: '11px' }}>FDG</span>
-                                            病人數量
+                                    <div style={{ paddingBottom: '16px', borderBottom: '1px solid var(--slate-100)' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', fontSize: '14px', fontWeight: 600, color: 'var(--slate-700)', marginBottom: '12px' }}>
+                                            <span style={{ background: 'var(--slate-100)', color: 'var(--slate-600)', padding: '2px 8px', borderRadius: '4px', marginRight: '8px', fontSize: '11px', border: '1px solid var(--slate-200)' }}>FDG</span>
+                                            病人總數
                                         </label>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             <button onClick={() => setPatientCount(Math.max(0, patientCount - 1))} className="btn-soft" style={{
-                                                width: '40px', height: '40px', borderRadius: '12px',
-                                                background: 'var(--pink-100)', border: 'none', cursor: 'pointer',
-                                                fontSize: '18px', color: 'var(--pink-500)'
+                                                width: '36px', height: '36px', borderRadius: '8px',
+                                                background: 'var(--slate-100)', border: '1px solid var(--slate-200)', cursor: 'pointer',
+                                                fontSize: '18px', color: 'var(--slate-600)', display: 'flex', alignItems: 'center', justifyContent: 'center'
                                             }}>−</button>
                                             <input
                                                 type="number"
@@ -1594,125 +1849,104 @@
                                                 onChange={(e) => setPatientCount(e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                 onBlur={(e) => setPatientCount(Math.max(0, parseInt(e.target.value) || 0))}
                                                 className="input-soft patient-count-input"
+                                                style={{ flex: 1, height: '36px' }}
                                             />
                                             <button onClick={() => setPatientCount(patientCount + 1)} className="btn-soft" style={{
-                                                width: '40px', height: '40px', borderRadius: '12px',
-                                                background: 'var(--pink-100)', border: 'none', cursor: 'pointer',
-                                                fontSize: '18px', color: 'var(--pink-500)'
+                                                width: '36px', height: '36px', borderRadius: '8px',
+                                                background: 'var(--slate-100)', border: '1px solid var(--slate-200)', cursor: 'pointer',
+                                                fontSize: '18px', color: 'var(--slate-600)', display: 'flex', alignItems: 'center', justifyContent: 'center'
                                             }}>+</button>
-                                            <span style={{ color: 'var(--warm-gray-500)' }}>位</span>
                                         </div>
                                     </div>
 
-                                    {/* 開始時間 */}
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            開始打藥時間
-                                        </label>
-                                        <input
-                                            type="time"
-                                            value={config.startTime}
-                                            onChange={(e) => handleConfigChange('startTime', e.target.value)}
-                                            className="input-soft"
-                                        />
-                                    </div>
+                                    {/* 基本時間參數排列 */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--slate-600)', marginBottom: '8px' }}>首針打藥時間</label>
+                                            <input
+                                                type="time"
+                                                value={config.startTime}
+                                                onChange={(e) => handleConfigChange('startTime', e.target.value)}
+                                                className="input-soft"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--slate-600)', marginBottom: '8px' }}>Uptake (分鐘)</label>
+                                            <input
+                                                type="number"
+                                                value={config.uptakeTime}
+                                                onChange={(e) => handleConfigChange('uptakeTime', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                onBlur={(e) => handleConfigChange('uptakeTime', Math.max(1, parseInt(e.target.value) || 60))}
+                                                className="input-soft"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
 
-                                    {/* Early Scan */}
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            Early Scan (分鐘)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={config.earlyScanDuration}
-                                            onChange={(e) => handleConfigChange('earlyScanDuration', e.target.value === '' ? '' : parseInt(e.target.value))}
-                                            onBlur={(e) => handleConfigChange('earlyScanDuration', Math.max(1, parseInt(e.target.value) || 35))}
-                                            className="input-soft"
-                                            style={{ width: '80px' }}
-                                        />
-                                    </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--slate-600)', marginBottom: '8px' }}>Early Scan</label>
+                                            <input
+                                                type="number"
+                                                value={config.earlyScanDuration}
+                                                onChange={(e) => handleConfigChange('earlyScanDuration', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                onBlur={(e) => handleConfigChange('earlyScanDuration', Math.max(1, parseInt(e.target.value) || 35))}
+                                                className="input-soft"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--slate-600)', marginBottom: '8px' }}>Delayed <span style={{ fontWeight: 400, color: 'var(--slate-400)' }}>(0=無)</span></label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={config.delayedScanDuration}
+                                                onChange={(e) => handleConfigChange('delayedScanDuration', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                onBlur={(e) => handleConfigChange('delayedScanDuration', Math.max(0, parseInt(e.target.value) || 0))}
+                                                className="input-soft"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
 
-                                    {/* Delayed Scan */}
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            Delayed Scan (分鐘) <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--warm-gray-400)' }}>0=不需要</span>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            value={config.delayedScanDuration}
-                                            onChange={(e) => handleConfigChange('delayedScanDuration', e.target.value === '' ? '' : parseInt(e.target.value))}
-                                            onBlur={(e) => handleConfigChange('delayedScanDuration', Math.max(0, parseInt(e.target.value) || 0))}
-                                            className="input-soft"
-                                            style={{ width: '80px' }}
-                                        />
-                                    </div>
-
-                                    {/* Uptake Time */}
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            Uptake Time (分鐘)
-                                        </label>
-                                        <input
-                                            type="number"
-                                            value={config.uptakeTime}
-                                            onChange={(e) => handleConfigChange('uptakeTime', e.target.value === '' ? '' : parseInt(e.target.value))}
-                                            onBlur={(e) => handleConfigChange('uptakeTime', Math.max(1, parseInt(e.target.value) || 60))}
-                                            className="input-soft"
-                                            style={{ width: '80px' }}
-                                        />
-                                    </div>
-
-                                    {/* 最小等待時間 */}
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            最小等待 (min)
-                                            <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--warm-gray-400)', marginLeft: '4px' }}>90-240</span>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            min="90"
-                                            max="240"
-                                            value={config.minWaitLimit}
-                                            onChange={(e) => handleConfigChange('minWaitLimit', e.target.value === '' ? '' : parseInt(e.target.value))}
-                                            onBlur={(e) => {
-                                                const val = Math.max(90, Math.min(240, parseInt(e.target.value) || 90));
-                                                handleConfigChange('minWaitLimit', val);
-                                            }}
-                                            className="input-soft"
-                                            style={{ width: '80px' }}
-                                        />
-                                    </div>
-
-                                    {/* 最大等待時間 */}
-                                    <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--warm-gray-600)', marginBottom: '8px' }}>
-                                            最大等待 (min)
-                                            <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--warm-gray-400)', marginLeft: '4px' }}>90-240</span>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            min="90"
-                                            max="240"
-                                            value={config.maxWaitLimit}
-                                            onChange={(e) => handleConfigChange('maxWaitLimit', e.target.value === '' ? '' : parseInt(e.target.value))}
-                                            onBlur={(e) => {
-                                                const val = Math.max(90, Math.min(240, parseInt(e.target.value) || 240));
-                                                handleConfigChange('maxWaitLimit', val);
-                                            }}
-                                            className="input-soft"
-                                            style={{ width: '80px' }}
-                                        />
+                                        <div>
+                                            <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, color: 'var(--slate-600)', marginBottom: '8px' }}>
+                                                <span>容許等待下限</span>
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="90"
+                                                max="240"
+                                                value={config.minWaitLimit}
+                                                onChange={(e) => handleConfigChange('minWaitLimit', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                onBlur={(e) => handleConfigChange('minWaitLimit', Math.max(90, Math.min(240, parseInt(e.target.value) || 90)))}
+                                                className="input-soft"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, color: 'var(--slate-600)', marginBottom: '8px' }}>
+                                                <span>容許等待上限</span>
+                                            </label>
+                                            <input
+                                                type="number"
+                                                min="90"
+                                                max="240"
+                                                value={config.maxWaitLimit}
+                                                onChange={(e) => handleConfigChange('maxWaitLimit', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                onBlur={(e) => handleConfigChange('maxWaitLimit', Math.max(90, Math.min(240, parseInt(e.target.value) || 240)))}
+                                                className="input-soft"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* 午休時間設定 */}
                                 <div style={{
-                                    marginTop: '16px',
+                                    marginTop: '24px',
                                     padding: '16px',
-                                    background: 'var(--warm-gray-50)',
-                                    borderRadius: '12px',
-                                    border: '1px solid var(--warm-gray-100)'
+                                    background: 'var(--bg-table-header)',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--slate-200)'
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: config.lunchBreakEnabled ? '16px' : '0' }}>
                                         <label style={{
@@ -1720,48 +1954,40 @@
                                             alignItems: 'center',
                                             gap: '8px',
                                             cursor: 'pointer',
-                                            fontSize: '14px',
+                                            fontSize: '13px',
                                             fontWeight: 600,
-                                            color: 'var(--warm-gray-700)'
+                                            color: 'var(--slate-700)'
                                         }}>
                                             <input
                                                 type="checkbox"
                                                 checked={config.lunchBreakEnabled}
                                                 onChange={(e) => handleConfigChange('lunchBreakEnabled', e.target.checked)}
-                                                style={{
-                                                    width: '18px',
-                                                    height: '18px',
-                                                    accentColor: 'var(--pink-400)'
-                                                }}
+                                                style={{ width: '16px', height: '16px', accentColor: 'var(--teal-600)' }}
                                             />
-                                            🍔 中午空機時間
+                                            設備中午暫停掃描
                                         </label>
-                                        <span style={{ fontSize: '12px', color: 'var(--warm-gray-500)' }}>
-                                            （機器休息，但可繼續打藥）
-                                        </span>
                                     </div>
 
                                     {config.lunchBreakEnabled && (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <label style={{ fontSize: '13px', color: 'var(--warm-gray-600)' }}>開始</label>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--slate-500)', width: '30px' }}>開始</span>
                                                 <input
                                                     type="time"
                                                     value={config.lunchBreakStart}
                                                     onChange={(e) => handleConfigChange('lunchBreakStart', e.target.value)}
                                                     className="input-soft"
-                                                    style={{ width: '110px' }}
+                                                    style={{ flex: 1, padding: '10px', fontSize: '14px' }}
                                                 />
                                             </div>
-                                            <span style={{ color: 'var(--warm-gray-400)' }}>→</span>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <label style={{ fontSize: '13px', color: 'var(--warm-gray-600)' }}>結束</label>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--slate-500)', width: '30px' }}>結束</span>
                                                 <input
                                                     type="time"
                                                     value={config.lunchBreakEnd}
                                                     onChange={(e) => handleConfigChange('lunchBreakEnd', e.target.value)}
                                                     className="input-soft"
-                                                    style={{ width: '110px' }}
+                                                    style={{ flex: 1, padding: '10px', fontSize: '14px' }}
                                                 />
                                             </div>
                                         </div>
@@ -1770,17 +1996,17 @@
 
                                 {/* Posluma PET 設定 - 可折疊 */}
                                 <div style={{
-                                    marginTop: '16px',
-                                    background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-                                    borderRadius: '12px',
-                                    border: '1px solid #a7f3d0',
+                                    marginTop: '24px',
+                                    background: 'var(--bg-card)',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--teal-200)',
                                     overflow: 'hidden'
                                 }}>
-                                    {/* 可點擊標題 */}
                                     <div
                                         onClick={() => setPoslumaExpanded(!poslumaExpanded)}
                                         style={{
-                                            padding: '14px 16px',
+                                            padding: '12px 16px',
+                                            background: 'var(--teal-50)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
@@ -1788,86 +2014,76 @@
                                             userSelect: 'none'
                                         }}
                                     >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <span style={{
-                                                background: 'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
-                                                padding: '4px 12px',
-                                                borderRadius: '8px',
-                                                fontSize: '13px',
-                                                fontWeight: 700,
-                                                color: 'white'
+                                                background: 'var(--teal-600)',
+                                                color: 'white',
+                                                padding: '2px 8px',
+                                                borderRadius: '4px',
+                                                fontSize: '11px',
+                                                fontWeight: 700
                                             }}>Posluma</span>
-                                            <span style={{ fontSize: '14px', fontWeight: 600, color: '#047857' }}>PSMA PET 設定</span>
+                                            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--teal-700)' }}>PSMA 專案檢查設定</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                             {config.poslumaCount > 0 && (
-                                                <span style={{
-                                                    background: '#10b981',
-                                                    color: 'white',
+                                                <span className="font-mono" style={{
+                                                    background: 'var(--bg-card)',
+                                                    color: 'var(--teal-700)',
+                                                    border: '1px solid var(--teal-200)',
                                                     padding: '2px 8px',
-                                                    borderRadius: '10px',
+                                                    borderRadius: '12px',
                                                     fontSize: '11px',
                                                     fontWeight: 600
                                                 }}>{config.poslumaCount} 位</span>
                                             )}
+                                            <i className={`fa-solid fa-chevron-${poslumaExpanded ? 'up' : 'down'}`}
+                                                style={{ color: 'var(--teal-600)', fontSize: '12px', transition: 'transform 0.2s' }}></i>
                                         </div>
-                                        <i className={`fa-solid fa-chevron-${poslumaExpanded ? 'up' : 'down'}`}
-                                            style={{ color: '#059669', fontSize: '14px', transition: 'transform 0.2s' }}></i>
                                     </div>
 
-                                    {/* 可折疊內容 */}
                                     <div style={{
-                                        maxHeight: poslumaExpanded ? '500px' : '0',
+                                        maxHeight: poslumaExpanded ? '600px' : '0',
                                         overflow: 'hidden',
                                         transition: 'max-height 0.3s ease-in-out',
-                                        padding: poslumaExpanded ? '0 16px 16px 16px' : '0 16px'
+                                        padding: poslumaExpanded ? '16px' : '0 16px'
                                     }}>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
-                                            {/* Posluma 病人數量 */}
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#047857', marginBottom: '6px' }}>
-                                                    病人數量
-                                                </label>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <button onClick={() => handleConfigChange('poslumaCount', Math.max(0, config.poslumaCount - 1))} className="btn-soft" style={{
-                                                        width: '32px', height: '32px', borderRadius: '8px',
-                                                        background: '#d1fae5', border: 'none', cursor: 'pointer',
-                                                        fontSize: '16px', color: '#059669'
-                                                    }}>−</button>
-                                                    <input
-                                                        type="number"
-                                                        value={config.poslumaCount}
-                                                        onChange={(e) => handleConfigChange('poslumaCount', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                                                        onBlur={(e) => handleConfigChange('poslumaCount', Math.max(0, parseInt(e.target.value) || 0))}
-                                                        className="input-soft patient-count-input"
-                                                        style={{ fontSize: '20px' }}
-                                                    />
-                                                    <button onClick={() => handleConfigChange('poslumaCount', config.poslumaCount + 1)} className="btn-soft" style={{
-                                                        width: '32px', height: '32px', borderRadius: '8px',
-                                                        background: '#d1fae5', border: 'none', cursor: 'pointer',
-                                                        fontSize: '16px', color: '#059669'
-                                                    }}>+</button>
-                                                </div>
-                                            </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', borderBottom: '1px solid var(--slate-100)', paddingBottom: '16px' }}>
+                                            <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--slate-700)', flex: 1 }}>Posluma 總量</label>
+                                            <button onClick={() => handleConfigChange('poslumaCount', Math.max(0, config.poslumaCount - 1))} className="btn-soft" style={{
+                                                width: '32px', height: '32px', borderRadius: '6px',
+                                                background: 'var(--teal-50)', border: '1px solid var(--teal-100)', cursor: 'pointer',
+                                                fontSize: '16px', color: 'var(--teal-600)'
+                                            }}>−</button>
+                                            <input
+                                                type="number"
+                                                value={config.poslumaCount}
+                                                onChange={(e) => handleConfigChange('poslumaCount', e.target.value === '' ? 0 : parseInt(e.target.value))}
+                                                onBlur={(e) => handleConfigChange('poslumaCount', Math.max(0, parseInt(e.target.value) || 0))}
+                                                className="input-soft font-mono"
+                                                style={{ width: '56px', textAlign: 'center' }}
+                                            />
+                                            <button onClick={() => handleConfigChange('poslumaCount', config.poslumaCount + 1)} className="btn-soft" style={{
+                                                width: '32px', height: '32px', borderRadius: '6px',
+                                                background: 'var(--teal-50)', border: '1px solid var(--teal-100)', cursor: 'pointer',
+                                                fontSize: '16px', color: 'var(--teal-600)'
+                                            }}>+</button>
+                                        </div>
 
-                                            {/* Posluma Early Scan */}
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '12px' }}>
                                             <div>
-                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#047857', marginBottom: '6px' }}>
-                                                    Early Scan (min)
-                                                </label>
+                                                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--slate-500)', marginBottom: '6px' }}>Early Scan (min)</label>
                                                 <input
                                                     type="number"
                                                     value={config.poslumaEarlyScan}
                                                     onChange={(e) => handleConfigChange('poslumaEarlyScan', e.target.value === '' ? '' : parseInt(e.target.value))}
                                                     onBlur={(e) => handleConfigChange('poslumaEarlyScan', Math.max(1, parseInt(e.target.value) || 20))}
                                                     className="input-soft"
-                                                    style={{ width: '70px' }}
+                                                    style={{ width: '100%' }}
                                                 />
                                             </div>
-
-                                            {/* Posluma Delayed Scan */}
                                             <div>
-                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#047857', marginBottom: '6px' }}>
-                                                    Delayed (min) <span style={{ fontSize: '10px', fontWeight: 400 }}>0=不需要</span>
-                                                </label>
+                                                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--slate-500)', marginBottom: '6px' }}>Delayed (0=無)</label>
                                                 <input
                                                     type="number"
                                                     min="0"
@@ -1875,37 +2091,32 @@
                                                     onChange={(e) => handleConfigChange('poslumaDelayedScan', e.target.value === '' ? '' : parseInt(e.target.value))}
                                                     onBlur={(e) => handleConfigChange('poslumaDelayedScan', Math.max(0, parseInt(e.target.value) || 0))}
                                                     className="input-soft"
-                                                    style={{ width: '70px' }}
+                                                    style={{ width: '100%' }}
                                                 />
                                             </div>
-
-                                            {/* Posluma Uptake Time */}
-                                            <div>
-                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#047857', marginBottom: '6px' }}>
-                                                    Uptake (min)
-                                                </label>
+                                            <div style={{ gridColumn: 'span 2' }}>
+                                                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--slate-500)', marginBottom: '6px' }}>Uptake (min)</label>
                                                 <input
                                                     type="number"
                                                     value={config.poslumaUptakeTime}
                                                     onChange={(e) => handleConfigChange('poslumaUptakeTime', e.target.value === '' ? '' : parseInt(e.target.value))}
                                                     onBlur={(e) => handleConfigChange('poslumaUptakeTime', Math.max(1, parseInt(e.target.value) || 60))}
                                                     className="input-soft"
-                                                    style={{ width: '70px' }}
+                                                    style={{ width: '100%' }}
                                                 />
                                             </div>
                                         </div>
 
-                                        {/* Posluma 自訂打藥時間 */}
                                         {config.poslumaCount > 0 && (
-                                            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #a7f3d0' }}>
-                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#047857', marginBottom: '8px' }}>
+                                            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed var(--teal-200)' }}>
+                                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--teal-700)', marginBottom: '10px' }}>
                                                     <i className="fa-solid fa-syringe" style={{ marginRight: '6px' }}></i>
-                                                    自訂打藥時間（可選）
+                                                    強制指定打藥時間
                                                 </label>
-                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                     {Array.from({ length: config.poslumaCount }, (_, i) => (
-                                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                            <span style={{ fontSize: '12px', color: '#059669', fontWeight: 600 }}>P{i + 1}</span>
+                                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <span className="font-mono" style={{ fontSize: '12px', color: 'var(--slate-500)', width: '20px' }}>P{i + 1}</span>
                                                             <input
                                                                 type="time"
                                                                 value={config.poslumaInjectionTimes[i] || '14:00'}
@@ -1915,158 +2126,80 @@
                                                                     handleConfigChange('poslumaInjectionTimes', newTimes);
                                                                 }}
                                                                 className="input-soft"
-                                                                style={{ width: '130px', fontSize: '14px', padding: '8px 12px' }}
+                                                                style={{ flex: 1 }}
                                                             />
                                                         </div>
                                                     ))}
                                                 </div>
-                                                <p style={{ margin: '8px 0 0 0', fontSize: '11px', color: '#6b7280' }}>
-
-                                                </p>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* 模式狀態 */}
+                            <p style={{ marginTop: '16px', textAlign: 'center', fontSize: '12px', color: 'var(--slate-400)' }}>
+                                參數修改會即時反映至右側報表
+                            </p>
+                        </div>
+
+                        {/* 右側：排程預覽區 (Right Pane) */}
+                        <div className="right-pane">
+                            {/* 模式狀態列 */}
                             {(patientCount > 0 || config.poslumaCount > 0) && (
-                                <div style={{
-                                    padding: '14px 24px',
+                                <div className="card no-print" style={{
+                                    marginBottom: '20px',
+                                    padding: '16px 20px',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
                                     flexWrap: 'wrap',
                                     gap: '12px',
-                                    borderTop: '1px solid var(--warm-gray-100)',
-                                    background: result.mode === 'BATCH'
-                                        ? 'linear-gradient(90deg, #dcfce7 0%, #bbf7d0 100%)'
-                                        : result.mode === 'AUTO_INTERLEAVED'
-                                            ? 'linear-gradient(90deg, #dbeafe 0%, #bfdbfe 100%)'
-                                            : result.mode === 'EARLY_ONLY'
-                                                ? 'linear-gradient(90deg, #fef3c7 0%, #fde68a 100%)'
-                                                : result.mode === 'MIXED'
-                                                    ? 'linear-gradient(90deg, #d1fae5 0%, #a7f3d0 100%)'
-                                                    : result.mode === 'POSLUMA_ONLY'
-                                                        ? 'linear-gradient(90deg, #ecfdf5 0%, #d1fae5 100%)'
-                                                        : result.mode === 'ERROR'
-                                                            ? 'linear-gradient(90deg, #fee2e2 0%, #fecaca 100%)'
-                                                            : 'var(--warm-gray-50)'
+                                    borderLeft: '4px solid ' + (
+                                        result.mode === 'BATCH' ? '#10b981' :
+                                            result.mode === 'AUTO_INTERLEAVED' ? '#3b82f6' :
+                                                result.mode === 'EARLY_ONLY' ? '#f59e0b' :
+                                                    result.mode === 'MIXED' ? '#0f766e' :
+                                                        result.mode === 'POSLUMA_ONLY' ? '#14b8a6' :
+                                                            result.mode === 'ERROR' ? '#ef4444' : 'var(--slate-300)'
+                                    )
                                 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                                        {result.mode === 'BATCH' && (
-                                            <>
-                                                <i className="fa-solid fa-check-circle" style={{ fontSize: '20px', color: '#166534' }}></i>
-                                                <span style={{ fontWeight: 700, color: '#166534' }}>批次模式</span>
-                                                <span style={{ fontSize: '13px', color: '#15803d' }}>依序完成所有 Early 後再做 Delayed</span>
-                                            </>
-                                        )}
-                                        {result.mode === 'AUTO_INTERLEAVED' && (
-                                            <>
-                                                <i className="fa-solid fa-arrows-rotate" style={{ fontSize: '20px', color: '#1e40af' }}></i>
-                                                <span style={{ fontWeight: 700, color: '#1e40af' }}>自動優化排程</span>
-                                                <span style={{ fontSize: '13px', color: '#1d4ed8' }}>
-                                                    {result.summary}
-                                                </span>
-                                            </>
-                                        )}
-                                        {result.mode === 'EARLY_ONLY' && (
-                                            <>
-                                                <i className="fa-solid fa-bolt" style={{ fontSize: '20px', color: '#92400e' }}></i>
-                                                <span style={{ fontWeight: 700, color: '#92400e' }}>僅 Early Scan</span>
-                                                <span style={{ fontSize: '13px', color: '#a16207' }}>病人不需要 Delayed Scan</span>
-                                            </>
-                                        )}
-                                        {result.mode === 'MIXED' && (
-                                            <>
-                                                <i className="fa-solid fa-layer-group" style={{ fontSize: '20px', color: '#047857' }}></i>
-                                                <span style={{ fontWeight: 700, color: '#047857' }}>混合排程</span>
-                                                <span style={{ fontSize: '13px', color: '#059669' }}>
-                                                    {result.summary}
-                                                </span>
-                                            </>
-                                        )}
-                                        {result.mode === 'POSLUMA_ONLY' && (
-                                            <>
-                                                <i className="fa-solid fa-dna" style={{ fontSize: '20px', color: '#059669' }}></i>
-                                                <span style={{ fontWeight: 700, color: '#059669' }}>Posluma 排程</span>
-                                                <span style={{ fontSize: '13px', color: '#10b981' }}>
-                                                    {result.summary}
-                                                </span>
-                                            </>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                        <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            {result.mode === 'BATCH' && <><i className="fa-solid fa-layer-group" style={{ color: '#10b981' }}></i> 批次處理模式</>}
+                                            {result.mode === 'AUTO_INTERLEAVED' && <><i className="fa-solid fa-bolt" style={{ color: '#3b82f6' }}></i> 自動插單優化</>}
+                                            {result.mode === 'EARLY_ONLY' && <><i className="fa-solid fa-clock-rotate-left" style={{ color: '#f59e0b' }}></i> 單次掃描模式</>}
+                                            {result.mode === 'MIXED' && <><i className="fa-solid fa-flask" style={{ color: '#0f766e' }}></i> 多藥物混合排程</>}
+                                            {result.mode === 'POSLUMA_ONLY' && <><i className="fa-solid fa-dna" style={{ color: '#14b8a6' }}></i> 獨立 PSMA 排程</>}
+                                            {result.mode === 'ERROR' && <><i className="fa-solid fa-circle-xmark" style={{ color: '#ef4444' }}></i> 參數錯誤</>}
+                                        </span>
+                                        {result.mode !== 'ERROR' && (
+                                            <span style={{ fontSize: '13px', color: 'var(--slate-500)', borderLeft: '1px solid var(--slate-200)', paddingLeft: '12px' }}>
+                                                {result.summary}
+                                            </span>
                                         )}
                                         {result.mode === 'ERROR' && (
-                                            <>
-                                                <i className="fa-solid fa-circle-xmark" style={{ fontSize: '20px', color: '#dc2626' }}></i>
-                                                <span style={{ fontWeight: 700, color: '#dc2626' }}>參數錯誤</span>
-                                                <span style={{ fontSize: '13px', color: '#b91c1c' }}>{result.error}</span>
-                                            </>
+                                            <span style={{ fontSize: '13px', color: '#ef4444', borderLeft: '1px solid #fee2e2', paddingLeft: '12px' }}>
+                                                {result.error}
+                                            </span>
                                         )}
                                     </div>
 
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', flexWrap: 'wrap' }}>
-                                        {result.maxPatientWaitTime && (
-                                            <div style={{ color: 'var(--warm-gray-600)' }}>
-                                                最長等待：
-                                                <span style={{ fontWeight: 700, marginLeft: '4px', color: '#16a34a' }}>
-                                                    {Math.floor(result.maxPatientWaitTime / 60)}h {result.maxPatientWaitTime % 60}m
-                                                </span>
-                                            </div>
-                                        )}
-                                        {result.machineIdleTime !== undefined && (
-                                            <div style={{ color: 'var(--warm-gray-600)' }}>
-                                                空機時間：
-                                                <span style={{ fontWeight: 700, marginLeft: '4px', color: result.machineIdleTime > 0 ? '#ea580c' : '#16a34a' }}>
-                                                    {result.machineIdleTime} min
-                                                </span>
-                                            </div>
-                                        )}
-                                        {result.batches && result.batches.length > 1 && (
-                                            <div style={{ color: 'var(--warm-gray-600)' }}>
-                                                FDG 分 <span style={{ fontWeight: 700, color: '#1d4ed8' }}>{result.batches.length}</span> 批
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* 空機時間詳細分析 */}
-                                    {result.idleGapDetails && result.idleGapDetails.length > 0 && (
-                                        <div style={{
-                                            marginTop: '12px',
-                                            padding: '10px 12px',
-                                            background: 'rgba(251, 146, 60, 0.1)',
-                                            borderRadius: '8px',
-                                            border: '1px solid rgba(251, 146, 60, 0.3)'
-                                        }}>
-                                            <div style={{ fontSize: '12px', fontWeight: 600, color: '#ea580c', marginBottom: '6px' }}>
-                                                空機時間分析
-                                            </div>
-                                            <div style={{ fontSize: '11px', color: 'var(--warm-gray-600)' }}>
-                                                {result.idleGapDetails.map((gap, idx) => (
-                                                    <div key={idx} style={{
-                                                        display: 'flex',
-                                                        gap: '8px',
-                                                        marginBottom: '4px',
-                                                        alignItems: 'center',
-                                                        flexWrap: 'wrap'
-                                                    }}>
-                                                        <span style={{
-                                                            background: '#fed7aa',
-                                                            padding: '2px 6px',
-                                                            borderRadius: '4px',
-                                                            fontWeight: 600,
-                                                            color: '#c2410c'
-                                                        }}>
-                                                            {gap.duration}min
-                                                        </span>
-                                                        <span>
-                                                            {minutesToTime(gap.startTime)} - {minutesToTime(gap.endTime)}
-                                                        </span>
-                                                        <span style={{ color: '#9ca3af' }}>
-                                                            ({gap.beforeType} {gap.beforeScan.split(' ')[1]} 後 → {gap.afterType} {gap.afterScan.split(' ')[1]} 前)
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                    {result.mode !== 'ERROR' && (
+                                        <div className="font-mono" style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '12px' }}>
+                                            {result.maxPatientWaitTime && (
+                                                <div style={{ color: 'var(--slate-500)' }}>
+                                                    最長等候: <span style={{ fontWeight: 700, color: 'var(--slate-800)' }}>
+                                                        {Math.floor(result.maxPatientWaitTime / 60)}h {result.maxPatientWaitTime % 60}m
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {result.machineIdleTime !== undefined && (
+                                                <div style={{ color: 'var(--slate-500)' }}>
+                                                    總機台閒置: <span style={{ fontWeight: 700, color: result.machineIdleTime > 0 ? 'var(--orange-600)' : 'var(--slate-800)' }}>
+                                                        {result.machineIdleTime} min
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -2074,40 +2207,26 @@
 
                             {/* Posluma 時間衝突警告 */}
                             {result.poslumaWarnings && result.poslumaWarnings.length > 0 && (
-                                <div style={{
-                                    padding: '14px 24px',
-                                    background: 'linear-gradient(90deg, #fef3c7 0%, #fde68a 100%)',
-                                    borderTop: '1px solid #fbbf24'
+                                <div className="card no-print" style={{
+                                    marginBottom: '20px', padding: '16px', border: '1px solid var(--orange-200)', background: 'var(--orange-50)'
                                 }}>
-                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                                        <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: '18px', color: '#b45309', marginTop: '2px' }}></i>
+                                    <div style={{ display: 'flex', gap: '12px' }}>
+                                        <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: '16px', color: 'var(--orange-500)', marginTop: '2px' }}></i>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: 700, color: '#92400e', marginBottom: '10px' }}>Posluma 時間衝突建議</div>
+                                            <div style={{ fontWeight: 700, color: 'var(--orange-600)', marginBottom: '12px', fontSize: '14px' }}>排程時間衝突建議</div>
                                             {result.poslumaWarnings.map((w, idx) => (
                                                 <div key={idx} style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    gap: '12px',
-                                                    padding: '8px 12px',
-                                                    background: 'rgba(255,255,255,0.6)',
-                                                    borderRadius: '8px',
-                                                    marginBottom: '6px',
-                                                    flexWrap: 'wrap'
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                                    background: 'var(--bg-card)', padding: '10px 12px', borderRadius: '6px', marginBottom: '8px', border: '1px solid var(--orange-100)'
                                                 }}>
-                                                    <div style={{ fontSize: '13px', color: '#a16207' }}>
-                                                        <strong>{w.patientId}</strong>: 設定 {w.originalTime} 與其他檢查衝突
+                                                    <div style={{ fontSize: '13px', color: 'var(--slate-700)' }}>
+                                                        <strong className="font-mono">P{w.patientIndex + 1}</strong>: 設定 {w.originalTime} 上機時段已被佔用
                                                     </div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '12px', color: '#6b7280' }}>建議</span>
-                                                        <span style={{
-                                                            padding: '4px 10px',
-                                                            background: '#bbf7d0',
-                                                            borderRadius: '6px',
-                                                            fontSize: '13px',
-                                                            color: '#16a34a',
-                                                            fontWeight: 600
-                                                        }}>{w.suggestedTime}</span>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <span style={{ fontSize: '12px', color: 'var(--slate-400)' }}>系統找出的最佳空檔</span>
+                                                        <span className="font-mono" style={{ background: 'var(--teal-50)', color: 'var(--teal-700)', padding: '2px 6px', borderRadius: '4px', fontWeight: 600, fontSize: '13px' }}>
+                                                            {w.suggestedTime}
+                                                        </span>
                                                         <button
                                                             onClick={() => {
                                                                 const newTimes = [...config.poslumaInjectionTimes];
@@ -2116,18 +2235,10 @@
                                                             }}
                                                             className="btn-soft"
                                                             style={{
-                                                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                                                                color: 'white',
-                                                                border: 'none',
-                                                                padding: '5px 10px',
-                                                                borderRadius: '6px',
-                                                                fontSize: '12px',
-                                                                fontWeight: 600,
-                                                                cursor: 'pointer'
+                                                                background: 'var(--orange-500)', color: 'white', border: 'none', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer'
                                                             }}
                                                         >
-                                                            <i className="fa-solid fa-check" style={{ marginRight: '4px' }}></i>
-                                                            採用
+                                                            採用建議
                                                         </button>
                                                     </div>
                                                 </div>
@@ -2136,75 +2247,67 @@
                                     </div>
                                 </div>
                             )}
-                        </div>
 
-                        {/* Tab 切換 */}
-                        <div className="no-print" style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
-                            <button
-                                onClick={() => setActiveTab('planner')}
-                                className="btn-soft"
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    padding: '12px 24px', borderRadius: '14px', border: 'none',
-                                    cursor: 'pointer', fontSize: '14px', fontWeight: 600,
-                                    background: activeTab === 'planner'
-                                        ? 'linear-gradient(135deg, #e9d5ff 0%, #f5d0fe 100%)'
-                                        : 'white',
-                                    color: activeTab === 'planner' ? '#7c3aed' : 'var(--warm-gray-600)',
-                                    boxShadow: activeTab === 'planner' ? '0 4px 14px rgba(124, 58, 237, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
-                                }}
-                            >
-                                <i className="fa-solid fa-clipboard-list" style={{ marginRight: '6px' }}></i> 排程清單
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('worklist')}
-                                className="btn-soft"
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    padding: '12px 24px', borderRadius: '14px', border: 'none',
-                                    cursor: 'pointer', fontSize: '14px', fontWeight: 600,
-                                    background: activeTab === 'worklist'
-                                        ? 'linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)'
-                                        : 'white',
-                                    color: activeTab === 'worklist' ? '#166534' : 'var(--warm-gray-600)',
-                                    boxShadow: activeTab === 'worklist' ? '0 4px 14px rgba(22, 101, 52, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)'
-                                }}
-                            >
-                                <i className="fa-solid fa-list-check" style={{ marginRight: '6px' }}></i> 攝影順序表
-                            </button>
-                        </div>
-
-                        {/* Tab 內容 */}
-                        {
-                            activeTab === 'planner' ? (
-                                <PlannerTab
-                                    schedule={result.schedule}
-                                    result={result}
-                                    config={config}
-                                    onDownload={() => {
-                                        const table = document.getElementById('injection-schedule-table');
-                                        if (table) downloadTableAsImage(table, 'injection_schedule');
+                            {/* Tab 頁籤 */}
+                            <div className="no-print" style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+                                <button
+                                    onClick={() => setActiveTab('planner')}
+                                    className="btn-soft"
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                        padding: '10px 20px', borderRadius: '8px', border: '1px solid',
+                                        cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+                                        borderColor: activeTab === 'planner' ? 'var(--navy-200)' : 'transparent',
+                                        background: activeTab === 'planner' ? 'var(--bg-card)' : 'transparent',
+                                        color: activeTab === 'planner' ? 'var(--navy-600)' : 'var(--slate-500)',
+                                        boxShadow: activeTab === 'planner' ? '0 1px 3px rgba(0,0,0,0.05)' : 'none'
                                     }}
-                                />
+                                >
+                                    <i className="fa-solid fa-syringe" style={{ color: activeTab === 'planner' ? 'var(--navy-500)' : 'inherit' }}></i>
+                                    注射時刻表 (醫師視角)
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('worklist')}
+                                    className="btn-soft"
+                                    style={{
+                                        display: 'flex', alignItems: 'center', gap: '8px',
+                                        padding: '10px 20px', borderRadius: '8px', border: '1px solid',
+                                        cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+                                        borderColor: activeTab === 'worklist' ? 'var(--teal-200)' : 'transparent',
+                                        background: activeTab === 'worklist' ? 'var(--bg-card)' : 'transparent',
+                                        color: activeTab === 'worklist' ? 'var(--teal-700)' : 'var(--slate-500)',
+                                        boxShadow: activeTab === 'worklist' ? '0 1px 3px rgba(0,0,0,0.05)' : 'none'
+                                    }}
+                                >
+                                    <i className="fa-solid fa-list-check" style={{ color: activeTab === 'worklist' ? 'var(--teal-500)' : 'inherit' }}></i>
+                                    攝影順序表 (實體打勾版)
+                                </button>
+                            </div>
+
+                            {/* Tab 內容實體化 */}
+                            {activeTab === 'planner' ? (
+                                <PlannerTab schedule={result.schedule} result={result} config={config} />
                             ) : (
                                 <WorklistTab schedule={result.schedule} result={result} />
-                            )
-                        }
+                            )}
+                        </div>
                     </main >
 
                     {/* 頁腳 */}
                     < footer className="no-print" style={{
                         marginTop: '48px',
-                        padding: '20px',
+                        padding: '24px 20px',
                         textAlign: 'center',
-                        fontSize: '13px',
-                        color: 'var(--warm-gray-400)'
+                        fontSize: '12px',
+                        color: 'var(--slate-400)',
+                        borderTop: '1px solid var(--slate-200)'
                     }}>
-                        <i className="fa-regular fa-star" style={{ marginRight: '6px' }}></i> PET 智慧排程助手 v2.0 | 僅供參考，實際操作請依臨床判斷
+                        PET 智慧排程助手(Premium Print Edition) | 僅供參考，實際操作請依臨床實務判斷
                     </footer >
                 </div >
             );
         };
+
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);

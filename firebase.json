@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "site": "nminfo-petarr",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "old_versions/**",
+      "docs/**",
+      "*.md",
+      "*.py"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

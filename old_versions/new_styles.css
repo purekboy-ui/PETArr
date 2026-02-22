@@ -1,0 +1,288 @@
+:root {
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            
+            --teal-50: #f0fdfa;
+            --teal-100: #ccfbf1;
+            --teal-500: #14b8a6;
+            --teal-600: #0d9488;
+            --teal-700: #0f766e;
+            
+            --navy-50: #f0f9ff;
+            --navy-100: #e0f2fe;
+            --navy-500: #0ea5e9;
+            --navy-600: #0284c7;
+            --navy-700: #0369a1;
+
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+        }
+
+        * {
+            font-family: 'Inter', system-ui, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--slate-50);
+            color: var(--slate-800);
+            min-height: 100vh;
+        }
+
+        /* 數字專屬字型 - 等寬, 排版更整齊 */
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* 呼吸燈動畫取消，改為優雅的進場與漸變 */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 列印優化 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            .printable-section,
+            .printable-section * {
+                visibility: visible !important;
+            }
+
+            .printable-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block !important;
+            }
+
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            /* 強制列印框線與高對比字體 */
+            .card {
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                border-radius: 0 !important;
+            }
+
+            table {
+                border-collapse: collapse !important;
+            }
+
+            th, td {
+                border-bottom: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            th {
+                border-top: 2px solid #000 !important;
+                border-bottom: 2px solid #000 !important;
+                background-color: transparent !important;
+            }
+
+            .timeline::before {
+                background-color: #000 !important;
+                width: 1px !important;
+            }
+
+            .timeline-dot {
+                border-color: #000 !important;
+                background-color: white !important;
+                border-width: 1px !important;
+            }
+
+            .print-border-solid {
+                border: 1px solid #000 !important;
+            }
+            .print-bold {
+                font-weight: 800 !important;
+                color: #000 !important;
+            }
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        /* 互動元件與卡片樣式 */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+            border: 1px solid var(--slate-200);
+        }
+
+        /* 表格行 hover */
+        .table-row:hover {
+            background-color: var(--slate-50);
+        }
+
+        /* 按鈕樣式 (高級質感) */
+        .btn-soft {
+            transition: all 0.2s ease;
+        }
+        .btn-soft:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-soft:active {
+            transform: translateY(0);
+        }
+
+        /* 醫療質感輸入框 */
+        .input-soft {
+            border: 1px solid var(--slate-300);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            outline: none;
+            background-color: white;
+            color: var(--slate-800);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        .input-soft:focus {
+            border-color: var(--teal-500);
+            box-shadow: 0 0 0 3px var(--teal-100);
+        }
+
+        /* 隱藏 number input 的 spinner arrows */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        /* 病人數量輸入框專屬 */
+        .patient-count-input {
+            width: 60px !important;
+            min-width: 60px;
+            text-align: center;
+            font-size: 18px !important;
+            font-weight: 600;
+            padding: 8px !important;
+        }
+
+        /* 時間軸專屬樣式 (Vertical Timeline) */
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+            margin-top: 16px;
+            margin-bottom: 24px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            bottom: -24px;
+            left: 11px;
+            width: 2px;
+            background-color: var(--slate-200);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-item:last-child::before { /* 覆蓋掉最後一根線 */
+            content: '';
+            position: absolute;
+            top: 24px;
+            bottom: 0px; /* actually we just want to suppress the main line. The main line is on .timeline, not item */
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -21.5px;
+            top: 4px;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            border: 2px solid white;
+            z-index: 10;
+        }
+        
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--slate-400);
+            border-radius: 4px;
+            display: inline-block;
+            background: white;
+        }
+
+        /* 雙欄佈局 (Split-Pane) */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                display: grid;
+                grid-template-columns: 320px 1fr;
+                align-items: start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .input-soft {
+                font-size: 16px !important;
+                padding: 10px 14px !important;
+            }
+            .timeline {
+                padding-left: 20px;
+            }
+            .timeline::before {
+                left: 7px;
+            }
+            .timeline-dot {
+                left: -17.5px;
+            }
+        }

@@ -163,8 +163,74 @@
         }
 
         @media (max-width: 768px) {
+
+            /* 1. 全域容器間距縮減 */
+            .app-container {
+                padding: 12px 8px !important;
+                gap: 16px !important;
+            }
+
+            /* 2. 強制所有區塊不超出螢幕 */
+            body,
+            .app-container,
+            .left-pane,
+            .right-pane,
+            .card {
+                max-width: 100vw !important;
+                min-width: 0 !important;
+            }
+
+            /* 3. 隱藏不必要的 SVG 動畫 */
             .svg-story-container {
                 display: none !important;
+            }
+
+            /* 4. 頂部導航改為垂直排列 */
+            header>div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                padding: 0 12px !important;
+            }
+
+            /* 頂部按鈕群滿版 */
+            header>div>div:last-child {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            /* 5. 左側輸入區全面支援換行 */
+            .left-pane .card {
+                padding: 16px !important;
+            }
+
+            /* 找出有 gap 大於 12px 的 flex container 強制換行 */
+            .left-pane div[style*="display: flex"] {
+                flex-wrap: wrap !important;
+            }
+
+            /* 第一排的時段設定與人數，強制換行並占滿 100% */
+            .left-pane div[style*="gap: 24px; margin-bottom: 24px"],
+            .left-pane div[style*="gap: '24px'"] {
+                flex-direction: column !important;
+                gap: 16px !important;
+            }
+
+            /* 各個輸入容器充滿 100% */
+            .left-pane input[type="number"],
+            .left-pane input[type="time"] {
+                width: 100% !important;
+                font-size: 16px !important;
+                /* 避免 iOS 自動放大 */
+            }
+
+            /* 6. 右側甘特圖容器加上滾動保護 */
+
+            /* 讓工作清單 (Worklist) 的卡片內元素換行 */
+            .timeline-item .print-border-solid {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
             }
         }
 
